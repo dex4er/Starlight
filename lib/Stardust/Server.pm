@@ -64,7 +64,17 @@ sub new {
         is_multiprocess      => Plack::Util::FALSE,
         _using_defer_accept  => undef,
         _unlink              => [],
+        _sigint              => 'INT',
     }, $class;
+
+    # Windows 7 and previous have bad SIGINT handling
+    if ($^O eq 'MSWin32') {
+        require Win32;
+        my @v = Win32::GetOSVersion();
+        if ($v[1]*1000 + $v[2] < 6_002) {
+            $self->{_sigint} = 'TERM';
+        }
+    };
 
     if ($args{max_workers} && $args{max_workers} > 1) {
         Carp::carp(
@@ -158,7 +168,8 @@ sub accept_loop {
 
     $self->{can_exit} = 1;
     my $is_keepalive = 0;
-    local $SIG{INT} = local $SIG{TERM} = sub {
+    my $sigint = $self->{_sigint};
+    local $SIG{$sigint} = local $SIG{TERM} = sub {
         my ($sig) = @_;
         warn "*** SIG$sig received in process ", $$ if DEBUG;
         exit 0 if $self->{can_exit};

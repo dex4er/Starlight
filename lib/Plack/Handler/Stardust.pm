@@ -53,8 +53,10 @@ sub run {
         delete $self->{processes}->{$pid};
     };
 
+    my $sigint = $self->{_sigint};
+
     if ($self->{max_workers} != 0) {
-        local $SIG{INT} = local $SIG{TERM} = sub {
+        local $SIG{$sigint} = local $SIG{TERM} = sub {
             my ($sig) = @_;
             warn "*** SIG$sig received in process ", $$ if DEBUG;
             $self->{term_received}++;
@@ -75,7 +77,7 @@ sub run {
         exit 0;
     } else {
         # run directly, mainly for debugging
-        local $SIG{INT} = local $SIG{TERM} = sub {
+        local $SIG{$sigint} = local $SIG{TERM} = sub {
             my ($sig) = @_;
             warn "*** SIG$sig received in process ", $$ if DEBUG;
             exit 0;
