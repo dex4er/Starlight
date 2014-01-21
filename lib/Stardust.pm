@@ -128,6 +128,26 @@ The Windows systems doesn't support pre-forking servers.
 
 =head1 BUGS
 
+There is a problem with Perl threads implementation which occurs on Windows.
+Some requests can fail with message:
+
+  failed to set socket to nonblocking mode:An operation was attempted on
+  something that is not a socket.
+
+or
+
+  Bad file descriptor at (eval 24) line 4.
+
+Cygwin version seems to be correct.
+
+This problem was introduced in Perl 5.16 and fixed in Perl 5.19.5.
+
+See L<https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003> and
+L<https://github.com/dex4er/Thrall/issues/5> for more information about this
+issue.
+
+=head2 Reporting
+
 If you find the bug or want to implement new features, please report it at
 L<https://github.com/dex4er/Stardust/issues>
 

@@ -11,6 +11,11 @@ use File::Temp;
 use IO::Socket::UNIX;
 use Socket;
 
+if ($^O eq 'MSWin32') {
+    plan skip_all => 'UNIX socket tests on Windows';
+    exit 0;
+}
+
 my ($fh, $filename) = File::Temp::tempfile(UNLINK=>1);
 unlink($filename);
 
