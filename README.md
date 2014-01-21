@@ -61,7 +61,7 @@ options(s).
 
 - \--main-process-delay=\#
 
-    the Stardust does not synchronise its processes and it requires a small delay in
+    the Stardust does not synchronize its processes and it requires a small delay in
     main process so it doesn't consume all CPU. (default: 0.1)
 
 - \--ssl=\#
