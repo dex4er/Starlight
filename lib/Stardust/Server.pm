@@ -6,9 +6,6 @@ use warnings;
 our $VERSION = '0.0100';
 
 use Config;
-use if ! $Config{useithreads}, 'forks';
-
-use threads;
 
 use Carp ();
 use Plack;
@@ -63,12 +60,7 @@ sub new {
             defined $args{err_respawn_interval}
                 ? $args{err_respawn_interval} : undef,
         ),
-        main_thread_delay    => $args{main_thread_delay} || 0.1,
-        thread_stack_size    => (
-            defined $args{thread_stack_size}
-                ? $args{thread_stack_size} : undef,
-        ),
-        is_multithread       => Plack::Util::FALSE,
+        main_process_delay   => $args{main_process_delay} || 0.1,
         is_multiprocess      => Plack::Util::FALSE,
         _using_defer_accept  => undef,
         _unlink              => [],
@@ -76,7 +68,7 @@ sub new {
 
     if ($args{max_workers} && $args{max_workers} > 1) {
         Carp::carp(
-            "Threading in $class is deprecated. Falling back to the single thread mode. ",
+            "Forking in $class is deprecated. Falling back to the single process mode. ",
             "If you need more workers, use Starman, Starlet or Stardust instead and run like `plackup -s Stardust`",
         );
     }
@@ -166,12 +158,19 @@ sub accept_loop {
 
     $self->{can_exit} = 1;
     my $is_keepalive = 0;
+    local $SIG{INT} = local $SIG{TERM} = sub {
+        my ($sig) = @_;
+        warn "*** SIG$sig received in process ", $$ if DEBUG;
+        exit 0 if $self->{can_exit};
+        $self->{term_received}++;
+        exit 0
+            if ($is_keepalive && $self->{can_exit}) || $self->{term_received} > 1;
+        # warn "server termination delayed while handling current HTTP request";
+    };
 
-    # Threads don't like simple 'IGNORE'
-    local $SIG{PIPE} = sub { 'IGNORE' };
+    local $SIG{PIPE} = 'IGNORE';
 
     while (! defined $max_reqs_per_child || $proc_req_count < $max_reqs_per_child) {
-        threads->yield;
         if (my ($conn,$peer) = $self->{listen_sock}->accept) {
             $self->{_is_deferred_accept} = $self->{_using_defer_accept};
             $conn->blocking(0)
@@ -204,7 +203,7 @@ sub accept_loop {
                     'psgi.errors'  => *STDERR,
                     'psgi.url_scheme'   => $self->{ssl} ? 'https' : 'http',
                     'psgi.run_once'     => Plack::Util::FALSE,
-                    'psgi.multithread'  => $self->{is_multithread},
+                    'psgi.multithread'  => Plack::Util::FALSE,
                     'psgi.multiprocess' => $self->{is_multiprocess},
                     'psgi.streaming'    => Plack::Util::TRUE,
                     'psgi.nonblocking'  => Plack::Util::FALSE,
@@ -366,7 +365,7 @@ sub handle_connection {
         die "Bad response $res";
     }
     if ($self->{term_received}) {
-        threads->exit;
+        exit 0;
     }
 
     return ($use_keepalive, $pipelined_buf);

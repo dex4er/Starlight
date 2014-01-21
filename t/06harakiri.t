@@ -9,18 +9,13 @@ use HTTP::Request::Common;
 use Plack::Test;
 use Test::More;
 
-if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005) {
-    plan skip_all => 'Perl with bug RT#119003 on Windows';
-    exit 0;
-}
-
 $Plack::Test::Impl = 'Server';
 $ENV{PLACK_SERVER} = 'Stardust';
 
 test_psgi
     app => sub {
         my $env = shift;
-        return [ 200, [ 'Content-Type' => 'text/plain' ], [threads->tid] ];
+        return [ 200, [ 'Content-Type' => 'text/plain' ], [$$] ];
     },
     client => sub {
         my %seen_pid;
@@ -38,7 +33,7 @@ test_psgi
     app => sub {
         my $env = shift;
         $env->{'psgix.harakiri.commit'} = $env->{'psgix.harakiri'};
-        return [ 200, [ 'Content-Type' => 'text/plain' ], [threads->tid] ];
+        return [ 200, [ 'Content-Type' => 'text/plain' ], [$$] ];
     },
     client => sub {
         my %seen_pid;

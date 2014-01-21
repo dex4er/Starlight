@@ -7,7 +7,7 @@ our $VERSION = '0.0100';
 
 use base qw(Stardust::Server);
 
-use threads;
+use POSIX ":sys_wait_h";
 use Plack::Util;
 
 use constant DEBUG => $ENV{PERL_STARDUST_DEBUG};
@@ -25,21 +25,13 @@ sub new {
 
     # instantiate and set the variables
     my $self = $klass->SUPER::new(%args);
-    if (threads->can('isthread')) {
-        # forks as threads emulation
-        $self->{is_multithread}  = Plack::Util::FALSE;
-        $self->{is_multiprocess} = Plack::Util::TRUE;
-    }
-    else {
-        # real threads
-        $self->{is_multithread}  = Plack::Util::TRUE;
-        $self->{is_multiprocess} = Plack::Util::FALSE;
-    };
+    $self->{is_multiprocess} = Plack::Util::TRUE;
     $self->{listen_sock} = $listen_sock
         if $listen_sock;
     $self->{max_workers} = $max_workers;
 
-    $self->{main_thread} = threads->self;
+    $self->{main_process} = $$;
+    $self->{processes} = +{};
 
     $self;
 }
@@ -47,66 +39,44 @@ sub new {
 sub run {
     my($self, $app) = @_;
 
-    # EV does not work with threads
-    $ENV{PERL_ANYEVENT_MODEL} = 'Perl';
-    $ENV{PERL_ANYEVENT_IO_MODEL} = 'Perl';
-
-    # Windows 7 and previous have bad SIGINT handling
-    my $sigint = 'INT';
-    if ($^O eq 'MSWin32') {
-        require Win32;
-        my @v = Win32::GetOSVersion();
-        if ($v[1]*1000 + $v[2] < 6_002) {
-            $sigint = 'NONE';
-        }
-    };
-
     $self->setup_listener();
 
-    # Threads don't like simple 'IGNORE'
-    local $SIG{PIPE} = sub { 'IGNORE' };
+    local $SIG{PIPE} = 'IGNORE';
+
+    local $SIG{CHLD} = sub {
+        my ($sig) = @_;
+        warn "*** SIG$sig received in process ", $$ if DEBUG;
+        local ($!, $?);
+        my $pid = waitpid(-1, WNOHANG);
+        return if $pid == -1;
+        return unless defined $self->{processes}->{$pid};
+        delete $self->{processes}->{$pid};
+    };
 
     if ($self->{max_workers} != 0) {
-        if ($self->{thread_stack_size}) {
-            threads->set_stack_size($self->{thread_stack_size});
-        }
-        local $SIG{$sigint} = local $SIG{TERM} = sub {
+        local $SIG{INT} = local $SIG{TERM} = sub {
             my ($sig) = @_;
-            warn "*** SIG$sig received in thread ", threads->tid if DEBUG;
+            warn "*** SIG$sig received in process ", $$ if DEBUG;
             $self->{term_received}++;
-            if (threads->tid) {
-                $self->{main_thread}->kill('TERM');
-                foreach my $thr (threads->list(threads::running)) {
-                    $thr->kill('TERM') if $thr->tid != threads->tid;
-                }
+            if ($$ != $self->{main_process}) {
+                kill 'TERM', $self->{main_process};
             }
         };
-        foreach my $n (1 .. $self->{max_workers}) {
-            $self->_create_thread($app);
-            $self->_sleep($self->{spawn_interval});
-        }
         while (not $self->{term_received}) {
-            warn "*** running ", scalar threads->list, " threads" if DEBUG;
-            foreach my $thr (threads->list(threads::joinable)) {
-                warn "*** wait for thread ", $thr->tid if DEBUG;
-                eval {
-                    $thr->detach;
-                };
-                warn $@ if $@;
-                $self->_create_thread($app);
+            warn "*** running ", scalar keys %{$self->{processes}}, " processes" if DEBUG;
+            foreach my $n (1 + scalar keys %{$self->{processes}} .. $self->{max_workers}) {
+                $self->_create_process($app);
                 $self->_sleep($self->{spawn_interval});
             }
-            # slow down main thread
-            $self->_sleep($self->{main_thread_delay});
+            # slow down main process
+            $self->_sleep($self->{main_process_delay});
         }
-        foreach my $thr (threads->list) {
-            $thr->detach;
-        }
+        exit 0;
     } else {
         # run directly, mainly for debugging
-        local $SIG{$sigint} = local $SIG{TERM} = sub {
+        local $SIG{INT} = local $SIG{TERM} = sub {
             my ($sig) = @_;
-            warn "*** SIG$sig received in thread ", threads->tid if DEBUG;
+            warn "*** SIG$sig received in process ", $$ if DEBUG;
             exit 0;
         };
         while (1) {
@@ -121,20 +91,22 @@ sub _sleep {
     select undef, undef, undef, $t if $t;
 }
 
-sub _create_thread {
+sub _create_process {
     my ($self, $app) = @_;
-    my $thr = threads->create( {context => 'void'},
-        sub {
-            my ($self, $app) = @_;
-            warn "*** thread ", threads->tid, " starting" if DEBUG;
-            eval {
-                $self->accept_loop($app, $self->_calc_reqs_per_child());
-            };
-            warn $@ if $@;
-            warn "*** thread ", threads->tid, " ending" if DEBUG;
-        },
-        $self, $app
-    );
+    my $pid = fork;
+    return warn "cannot fork: $!" unless defined $pid;
+
+    if ($pid == 0) {
+        warn "*** process ", $$, " starting" if DEBUG;
+        eval {
+            $self->accept_loop($app, $self->_calc_reqs_per_child());
+        };
+        warn $@ if $@;
+        warn "*** process ", $$, " ending" if DEBUG;
+        exit 0;
+    } else {
+        $self->{processes}->{$pid} = 1;
+    }
 }
 
 sub _calc_reqs_per_child {
