@@ -1,0 +1,164 @@
+package Stardust;
+
+=head1 NAME
+
+Stardust - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
+
+=head1 SYNOPSIS
+
+  $ plackup -s Stardust --port=80 [options] your-app.psgi
+
+  $ plackup -s Stardust --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt [options] your-app.psgi
+
+  $ plackup -s Stardust --port=80 --ipv6 [options] your-app.psgi
+
+  $ plackup -s Stardust --socket=/tmp/stardust.sock [options] your-app.psgi
+
+=head1 DESCRIPTION
+
+Stardust is a standalone HTTP/1.1 server with keep-alive support. It uses
+pre-forking. It is pure-Perl implementation which doesn't require any XS
+package.
+
+=for readme stop
+
+=cut
+
+
+use 5.008_001;
+
+use strict;
+use warnings;
+
+our $VERSION = '0.0100';
+
+1;
+
+
+__END__
+
+=head1 COMMAND LINE OPTIONS
+
+In addition to the options supported by L<plackup>, Stardust accepts following
+options(s).
+
+=over
+
+=item --max-workers=#
+
+number of worker processes (default: 10)
+
+=item --timeout=#
+
+seconds until timeout (default: 300)
+
+=item --keepalive-timeout=#
+
+timeout for persistent connections (default: 2)
+
+=item --max-keepalive-reqs=#
+
+max. number of requests allowed per single persistent connection.  If set to
+one, persistent connections are disabled (default: 1)
+
+=item --max-reqs-per-child=#
+
+max. number of requests to be handled before a worker process exits (default:
+1000)
+
+=item --min-reqs-per-child=#
+
+if set, randomizes the number of requests handled by a single worker process
+between the value and that supplied by C<--max-reqs-per-chlid> (default: none)
+
+=item --spawn-interval=#
+
+if set, worker processes will not be spawned more than once than every given
+seconds.  Also, when SIGHUP is being received, no more than one worker
+processes will be collected every given seconds.  This feature is useful for
+doing a "slow-restart". (default: none)
+
+=item --main-process-delay=#
+
+the Stardust does not use signals or semaphores and it requires a small delay in
+main process so it doesn't consume all CPU. (default: 0.1)
+
+=item --ssl=#
+
+enables SSL support. The L<IO::Socket::SSL> module is required. (default: 0)
+
+=item --ssl-key-file=#
+
+specifies the path to SSL key file. (default: none)
+
+=item --ssl-cert-file=#
+
+specifies the path to SSL certificate file. (default: none)
+
+=item --ipv6=#
+
+enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 0)
+
+=item --socket=#
+
+enables UNIX socket support. The L<IO::Socket::UNIX> module is required. The
+socket file have to be not yet created. The first character C<@> or C<\0> in
+the socket file name means that abstract socket address will be created.
+(default: none)
+
+=back
+
+=for readme continue
+
+=head1 NOTES
+
+Stardust was started as a fork of L<Thrall> server which is a fork of
+L<Starlet> server. It has almost the same code as L<Thrall> and L<Starlet> and
+it was adapted to doesn't use any other modules than L<Plack>.
+
+=head1 SEE ALSO
+
+L<Thrall>,
+L<Starlet>,
+L<Starman>
+
+=head1 LIMITATIONS
+
+The Windows systems doesn't support pre-forking servers.
+
+=head1 BUGS
+
+If you find the bug or want to implement new features, please report it at
+L<https://github.com/dex4er/Stardust/issues>
+
+The code repository is available at
+L<http://github.com/dex4er/Stardust>
+
+=head1 AUTHORS
+
+Piotr Roszatycki <dexter@cpan.org>
+
+Based on Thrall by:
+
+Piotr Roszatycki <dexter@cpan.org>
+
+Based on Starlet by:
+
+Kazuho Oku
+
+miyagawa
+
+kazeburo
+
+Some code based on Plack:
+
+Tatsuhiko Miyagawa
+
+=head1 LICENSE
+
+Copyright (c) 2013-2014 Piotr Roszatycki <dexter@cpan.org>.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as perl itself.
+
+See L<http://dev.perl.org/licenses/artistic.html>
