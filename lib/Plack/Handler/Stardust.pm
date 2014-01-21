@@ -58,9 +58,6 @@ sub run {
             my ($sig) = @_;
             warn "*** SIG$sig received in process ", $$ if DEBUG;
             $self->{term_received}++;
-            if ($$ != $self->{main_process}) {
-                kill 'TERM', $self->{main_process};
-            }
         };
         while (not $self->{term_received}) {
             warn "*** running ", scalar keys %{$self->{processes}}, " processes" if DEBUG;
@@ -70,6 +67,10 @@ sub run {
             }
             # slow down main process
             $self->_sleep($self->{main_process_delay});
+        }
+        foreach my $pid (keys %{$self->{processes}}) {
+            warn "*** stopping process ", $pid if DEBUG;
+            kill 'TERM', $pid;
         }
         exit 0;
     } else {
