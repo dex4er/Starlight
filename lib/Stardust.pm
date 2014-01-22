@@ -124,7 +124,12 @@ L<Starman>
 
 =head1 LIMITATIONS
 
-The Windows systems doesn't support pre-forking servers.
+Perl on Windows systems (MSWin32 and cygwin) emulates fork and waitpid functions
+and uses threads internally. See L<perlfork> (MSWin32) and L<perlcygwin>
+(cygwin) for details and limitations.
+
+It might be better option to use on this system the server with explicit threads
+implementation, ie. L<Thrall>.
 
 =head1 BUGS
 
