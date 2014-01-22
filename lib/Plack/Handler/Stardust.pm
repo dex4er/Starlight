@@ -7,7 +7,7 @@ our $VERSION = '0.0100';
 
 use base qw(Stardust::Server);
 
-use POSIX ":sys_wait_h";
+use POSIX qw(:sys_wait_h);
 use Plack::Util;
 
 use constant DEBUG => $ENV{PERL_STARDUST_DEBUG};
@@ -48,6 +48,7 @@ sub new {
 sub run {
     my($self, $app) = @_;
 
+    warn "*** starting main process ", $$ if DEBUG;
     $self->setup_listener();
 
     local $SIG{PIPE} = 'IGNORE';
@@ -63,6 +64,7 @@ sub run {
     };
 
     my $sigint = $self->{_sigint};
+    my $sigterm = $^O eq 'MSWin32' ? 'KILL' : 'TERM';
 
     if ($self->{max_workers} != 0) {
         local $SIG{$sigint} = local $SIG{TERM} = sub {
@@ -72,6 +74,7 @@ sub run {
         };
         while (not $self->{term_received}) {
             warn "*** running ", scalar keys %{$self->{processes}}, " processes" if DEBUG;
+            # TODO kill $pid, 0 to check if child is still alive
             foreach my $n (1 + scalar keys %{$self->{processes}} .. $self->{max_workers}) {
                 $self->_create_process($app);
                 $self->_sleep($self->{spawn_interval});
@@ -79,10 +82,16 @@ sub run {
             # slow down main process
             $self->_sleep($self->{main_process_delay});
         }
-        foreach my $pid (keys %{$self->{processes}}) {
-            warn "*** stopping process ", $pid if DEBUG;
-            kill 'TERM', $pid;
+        if (my @pids = keys %{$self->{processes}}) {
+            warn "*** stopping ", scalar @pids, " processes" if DEBUG;
+            foreach my $pid (@pids) {
+                warn "*** stopping process ", $pid if DEBUG;
+                kill $sigterm, $pid;
+                warn "*** waiting for process ", $pid if DEBUG;
+                waitpid $pid, 0;
+            }
         }
+        warn "*** stopping main process ", $$ if DEBUG;
         exit 0;
     } else {
         # run directly, mainly for debugging
