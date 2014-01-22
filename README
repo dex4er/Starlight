@@ -24,7 +24,12 @@ SEE ALSO
     Thrall, Starlet, Starman
 
 LIMITATIONS
-    The Windows systems doesn't support pre-forking servers.
+    Perl on Windows systems (MSWin32 and cygwin) emulates fork and waitpid
+    functions and uses threads internally. See perlfork (MSWin32) and
+    perlcygwin (cygwin) for details and limitations.
+
+    It might be better option to use on this system the server with explicit
+    threads implementation, i.e. Thrall.
 
 BUGS
     There is a problem with Perl threads implementation which occurs on

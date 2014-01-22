@@ -129,7 +129,7 @@ and uses threads internally. See L<perlfork> (MSWin32) and L<perlcygwin>
 (cygwin) for details and limitations.
 
 It might be better option to use on this system the server with explicit threads
-implementation, ie. L<Thrall>.
+implementation, i.e. L<Thrall>.
 
 =head1 BUGS
 

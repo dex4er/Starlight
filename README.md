@@ -101,7 +101,12 @@ it was adapted to doesn't use any other modules than [Plack](https://metacpan.or
 
 # LIMITATIONS
 
-The Windows systems doesn't support pre-forking servers.
+Perl on Windows systems (MSWin32 and cygwin) emulates fork and waitpid functions
+and uses threads internally. See [perlfork](https://metacpan.org/pod/perlfork) (MSWin32) and [perlcygwin](https://metacpan.org/pod/perlcygwin)
+(cygwin) for details and limitations.
+
+It might be better option to use on this system the server with explicit threads
+implementation, i.e. [Thrall](https://metacpan.org/pod/Thrall).
 
 # BUGS
 
