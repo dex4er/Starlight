@@ -25,7 +25,7 @@ sub new {
 
     # instantiate and set the variables
     my $self = $klass->SUPER::new(%args);
-    if ($^O =~ /^(MSWin32|cygwin)$/) {
+    if ($^O eq 'MSWin32') {
         # forks are emulated
         $self->{is_multithread}  = Plack::Util::TRUE;
         $self->{is_multiprocess} = Plack::Util::FALSE;
