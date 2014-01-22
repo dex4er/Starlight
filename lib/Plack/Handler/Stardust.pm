@@ -25,7 +25,16 @@ sub new {
 
     # instantiate and set the variables
     my $self = $klass->SUPER::new(%args);
-    $self->{is_multiprocess} = Plack::Util::TRUE;
+    if ($^O =~ /^(MSWin32|cygwin)$/) {
+        # forks are emulated
+        $self->{is_multithread}  = Plack::Util::TRUE;
+        $self->{is_multiprocess} = Plack::Util::FALSE;
+    }
+    else {
+        # real forks
+        $self->{is_multithread}  = Plack::Util::FALSE;
+        $self->{is_multiprocess} = Plack::Util::TRUE;
+    };
     $self->{listen_sock} = $listen_sock
         if $listen_sock;
     $self->{max_workers} = $max_workers;
