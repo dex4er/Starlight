@@ -172,7 +172,7 @@ sub accept_loop {
     my $sigint = $self->{_sigint};
     local $SIG{$sigint} = local $SIG{TERM} = sub {
         my ($sig) = @_;
-        warn "*** SIG$sig received in process ", $$ if DEBUG;
+        warn "*** SIG$sig received in process $$" if DEBUG;
         exit 0 if $self->{can_exit};
         $self->{term_received}++;
         exit 0

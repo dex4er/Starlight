@@ -50,14 +50,14 @@ sub new {
 sub run {
     my($self, $app) = @_;
 
-    warn "*** starting main process ", $$ if DEBUG;
+    warn "*** starting main process $$" if DEBUG;
     $self->setup_listener();
 
     local $SIG{PIPE} = 'IGNORE';
 
     local $SIG{CHLD} = sub {
         my ($sig) = @_;
-        warn "*** SIG$sig received in process ", $$ if DEBUG;
+        warn "*** SIG$sig received in process $$" if DEBUG;
         local ($!, $?);
         my $pid = waitpid(-1, WNOHANG);
         return if $pid == -1;
@@ -71,7 +71,7 @@ sub run {
     if ($self->{max_workers} != 0) {
         local $SIG{$sigint} = local $SIG{TERM} = sub {
             my ($sig) = @_;
-            warn "*** SIG$sig received in process ", $$ if DEBUG;
+            warn "*** SIG$sig received in process $$" if DEBUG;
             $self->{term_received}++;
         };
         while (not $self->{term_received}) {
@@ -87,14 +87,14 @@ sub run {
         if (my @pids = keys %{$self->{processes}}) {
             warn "*** stopping ", scalar @pids, " processes" if DEBUG;
             foreach my $pid (@pids) {
-                warn "*** stopping process ", $pid if DEBUG;
+                warn "*** stopping process $pid" if DEBUG;
                 kill $sigterm, $pid;
             }
             if (CYGWIN_KILL_PROCESS) {
                 $self->_sleep(1);
                 foreach my $pid (keys %{$self->{processes}}) {
                     my $winpid = Cygwin::pid_to_winpid($pid) or next;
-                    warn "*** terminating Windows process ", $winpid if DEBUG;
+                    warn "*** terminating process $pid winpid $winpid" if DEBUG;
                     Win32::Process::KillProcess($winpid, 0);
                 }
             }
@@ -104,13 +104,13 @@ sub run {
                 waitpid $pid, 0;
             }
         }
-        warn "*** stopping main process ", $$ if DEBUG;
+        warn "*** stopping main process $$" if DEBUG;
         exit 0;
     } else {
         # run directly, mainly for debugging
         local $SIG{$sigint} = local $SIG{TERM} = sub {
             my ($sig) = @_;
-            warn "*** SIG$sig received in process ", $$ if DEBUG;
+            warn "*** SIG$sig received in process $$" if DEBUG;
             exit 0;
         };
         while (1) {
@@ -131,12 +131,12 @@ sub _create_process {
     return warn "cannot fork: $!" unless defined $pid;
 
     if ($pid == 0) {
-        warn "*** process ", $$, " starting" if DEBUG;
+        warn "*** process $$ starting" if DEBUG;
         eval {
             $self->accept_loop($app, $self->_calc_reqs_per_child());
         };
         warn $@ if $@;
-        warn "*** process ", $$, " ending" if DEBUG;
+        warn "*** process $$ ending" if DEBUG;
         exit 0;
     } else {
         $self->{processes}->{$pid} = 1;
