@@ -139,7 +139,9 @@ L<Win32::Process> module which helps to terminate stalled worker processes.
 
 =head1 BUGS
 
-There is a problem with Perl threads implementation which occurs on Windows.
+There is a problem with Perl threads implementation which occurs on Windows
+systems (MSWin32). Cygwin version seems to be correct.
+
 Some requests can fail with message:
 
   failed to set socket to nonblocking mode:An operation was attempted on
@@ -149,12 +151,19 @@ or
 
   Bad file descriptor at (eval 24) line 4.
 
-Cygwin version seems to be correct.
-
 This problem was introduced in Perl 5.16 and fixed in Perl 5.19.5.
 
 See L<https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003> and
 L<https://github.com/dex4er/Thrall/issues/5> for more information about this
+issue.
+
+Harakiri mode fails with message:
+
+  Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
+  0x22dcc0c at lib/Plack/Handler/Stardust.pm line 140.
+
+See L<https://rt.perl.org/Public/Bug/Display.html?id=40565> and
+L<https://github.com/dex4er/Stardust/issues/1> for more information about this
 issue.
 
 =head2 Reporting
