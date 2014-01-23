@@ -10,6 +10,8 @@ use base qw(Stardust::Server);
 use POSIX qw(:sys_wait_h);
 use Plack::Util;
 
+use constant CYGWIN_KILL_PROCESS => $^O eq 'cygwin' && eval { require Win32::Process; 1; };
+
 use constant DEBUG => $ENV{PERL_STARDUST_DEBUG};
 
 sub new {
@@ -87,6 +89,17 @@ sub run {
             foreach my $pid (@pids) {
                 warn "*** stopping process ", $pid if DEBUG;
                 kill $sigterm, $pid;
+            }
+            if (CYGWIN_KILL_PROCESS) {
+                $self->_sleep(1);
+                foreach my $pid (keys %{$self->{processes}}) {
+                    my $winpid = Cygwin::pid_to_winpid($pid) or next;
+                    warn "*** terminating Windows process ", $winpid if DEBUG;
+                    Win32::Process::KillProcess($winpid, 0);
+                }
+            }
+            $self->_sleep(1);
+            foreach my $pid (keys %{$self->{processes}}) {
                 warn "*** waiting for process ", $pid if DEBUG;
                 waitpid $pid, 0;
             }

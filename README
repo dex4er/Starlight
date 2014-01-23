@@ -31,6 +31,9 @@ LIMITATIONS
     It might be better option to use on this system the server with explicit
     threads implementation, i.e. Thrall.
 
+    For Cygwin the `perl-libwin32' package is higly recommended, because of
+    Win32::Process module which helps to terminate stalled worker processes.
+
 BUGS
     There is a problem with Perl threads implementation which occurs on
     Windows. Some requests can fail with message:

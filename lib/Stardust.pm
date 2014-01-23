@@ -131,6 +131,9 @@ and uses threads internally. See L<perlfork> (MSWin32) and L<perlcygwin>
 It might be better option to use on this system the server with explicit threads
 implementation, i.e. L<Thrall>.
 
+For Cygwin the C<perl-libwin32> package is higly recommended, because of
+L<Win32::Process> module which helps to terminate stalled worker processes.
+
 =head1 BUGS
 
 There is a problem with Perl threads implementation which occurs on Windows.

@@ -21,6 +21,9 @@ my $build = Module::Build::My->new(
         'perl'                  => 5.008_001,
         'Plack'                 => 0.9920,
     },
+    recommends              => {
+        $^O eq 'cygwin' ? ('Win32::Process' => 0) : (),
+    },
     build_requires          => {
         'HTTP::Tiny'            => 0,
         'Test::More'            => 0.88,
