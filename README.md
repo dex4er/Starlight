@@ -108,7 +108,7 @@ and uses threads internally. See [perlfork](https://metacpan.org/pod/perlfork) (
 It might be better option to use on this system the server with explicit threads
 implementation, i.e. [Thrall](https://metacpan.org/pod/Thrall).
 
-For Cygwin the `perl-libwin32` package is higly recommended, because of
+For Cygwin the `perl-libwin32` package is highly recommended, because of
 [Win32::Process](https://metacpan.org/pod/Win32::Process) module which helps to terminate stalled worker processes.
 
 # BUGS
