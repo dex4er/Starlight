@@ -14,6 +14,8 @@ Stardust - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
 
   $ plackup -s Stardust --socket=/tmp/stardust.sock [options] your-app.psgi
 
+  $ stardust your-app.psgi
+
 =head1 DESCRIPTION
 
 Stardust is a standalone HTTP/1.1 server with keep-alive support. It uses
@@ -118,6 +120,7 @@ it was adapted to doesn't use any other modules than L<Plack>.
 
 =head1 SEE ALSO
 
+L<stardust>,
 L<Thrall>,
 L<Starlet>,
 L<Starman>
