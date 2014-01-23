@@ -14,6 +14,8 @@ Stardust - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
 
     $ plackup -s Stardust --socket=/tmp/stardust.sock [options] your-app.psgi
 
+    $ stardust your-app.psgi
+
 # DESCRIPTION
 
 Stardust is a standalone HTTP/1.1 server with keep-alive support. It uses
@@ -95,6 +97,7 @@ it was adapted to doesn't use any other modules than [Plack](https://metacpan.or
 
 # SEE ALSO
 
+[stardust](https://metacpan.org/pod/stardust),
 [Thrall](https://metacpan.org/pod/Thrall),
 [Starlet](https://metacpan.org/pod/Starlet),
 [Starman](https://metacpan.org/pod/Starman)
@@ -113,7 +116,9 @@ For Cygwin the `perl-libwin32` package is highly recommended, because of
 
 # BUGS
 
-There is a problem with Perl threads implementation which occurs on Windows.
+There is a problem with Perl threads implementation which occurs on Windows
+systems (MSWin32). Cygwin version seems to be correct.
+
 Some requests can fail with message:
 
     failed to set socket to nonblocking mode:An operation was attempted on
@@ -123,12 +128,19 @@ or
 
     Bad file descriptor at (eval 24) line 4.
 
-Cygwin version seems to be correct.
-
 This problem was introduced in Perl 5.16 and fixed in Perl 5.19.5.
 
 See [https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003](https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003) and
 [https://github.com/dex4er/Thrall/issues/5](https://github.com/dex4er/Thrall/issues/5) for more information about this
+issue.
+
+Harakiri mode fails with message:
+
+    Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
+    0x22dcc0c at lib/Plack/Handler/Stardust.pm line 140.
+
+See [https://rt.perl.org/Public/Bug/Display.html?id=40565](https://rt.perl.org/Public/Bug/Display.html?id=40565) and
+[https://github.com/dex4er/Stardust/issues/1](https://github.com/dex4er/Stardust/issues/1) for more information about this
 issue.
 
 ## Reporting
