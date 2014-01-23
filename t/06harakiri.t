@@ -9,8 +9,8 @@ use HTTP::Request::Common;
 use Plack::Test;
 use Test::More;
 
-if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005) {
-    plan skip_all => 'Perl with bug RT#119003 on Windows';
+if ($^O eq 'MSWin32' and not $ENV{PERL_TEST_BROKEN}) {
+    plan skip_all => 'Perl with bug RT#40565 on Windows';
     exit 0;
 }
 
