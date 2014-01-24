@@ -2,7 +2,7 @@ package Starlight;
 
 =head1 NAME
 
-Starlight - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
+Starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
 
 =head1 SYNOPSIS
 

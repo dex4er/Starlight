@@ -2,7 +2,7 @@
 
 # NAME
 
-starlight - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
+starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
 
 # SYNOPSIS
 
