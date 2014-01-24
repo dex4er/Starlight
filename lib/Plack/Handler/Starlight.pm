@@ -61,7 +61,6 @@ sub run {
         local ($!, $?);
         my $pid = waitpid(-1, WNOHANG);
         return if $pid == -1;
-        return unless defined $self->{processes}->{$pid};
         delete $self->{processes}->{$pid};
     };
 
@@ -76,7 +75,9 @@ sub run {
         };
         while (not $self->{term_received}) {
             warn "*** running ", scalar keys %{$self->{processes}}, " processes" if DEBUG;
-            # TODO kill $pid, 0 to check if child is still alive
+            foreach my $pid (keys %{$self->{processes}}) {
+                delete $self->{processes}->{$pid} if not kill 0, $pid;
+            }
             foreach my $n (1 + scalar keys %{$self->{processes}} .. $self->{max_workers}) {
                 $self->_create_process($app);
                 $self->_sleep($self->{spawn_interval});
