@@ -136,12 +136,12 @@ L<Starman>
 
 =head1 LIMITATIONS
 
-Perl on Windows systems (MSWin32 and cygwin) emulates fork and waitpid functions
-and uses threads internally. See L<perlfork> (MSWin32) and L<perlcygwin>
-(cygwin) for details and limitations.
+Perl on Windows systems (MSWin32 and cygwin) emulates L<perlfunc/fork> and
+L<perlfunc/waitpid> functions and uses threads internally. See L<perlfork>
+(MSWin32) and L<perlcygwin> (cygwin) for details and limitations.
 
-It might be better option to use on this system the server with explicit threads
-implementation, i.e. L<Thrall>.
+It might be better option to use on this system the server with explicit
+L<threads> implementation, i.e. L<Thrall>.
 
 For Cygwin the C<perl-libwin32> package is highly recommended, because of
 L<Win32::Process> module which helps to terminate stalled worker processes.
@@ -166,10 +166,13 @@ See L<https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003> and
 L<https://github.com/dex4er/Thrall/issues/5> for more information about this
 issue.
 
-Harakiri mode fails with message:
+The server fails when worker process calls L<perlfunc/exit> function:
 
   Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
   0x22dcc0c at lib/Plack/Handler/Starlight.pm line 140.
+
+It means that Harakiri mode can't work and the server have to be started with
+C<--max-reqs-per-child=inf> option.
 
 See L<https://rt.perl.org/Public/Bug/Display.html?id=40565> and
 L<https://github.com/dex4er/Starlight/issues/1> for more information about this
