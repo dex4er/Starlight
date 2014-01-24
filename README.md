@@ -2,19 +2,17 @@
 
 # NAME
 
-Stardust - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
+stardust - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
 
 # SYNOPSIS
 
-    $ plackup -s Stardust --port=80 [options] your-app.psgi
+    $ stardust --workers=20 --max-reqs-per-child=100 app.psgi
 
-    $ plackup -s Stardust --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt [options] your-app.psgi
+    $ stardust --port=80 --ipv6=1 app.psgi
 
-    $ plackup -s Stardust --port=80 --ipv6 [options] your-app.psgi
+    $ stardust --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
 
-    $ plackup -s Stardust --socket=/tmp/stardust.sock [options] your-app.psgi
-
-    $ stardust your-app.psgi
+    $ stardust --socket=/tmp/stardust.sock app.psgi
 
 # DESCRIPTION
 
@@ -22,9 +20,9 @@ Stardust is a standalone HTTP/1.1 server with keep-alive support. It uses
 pre-forking. It is pure-Perl implementation which doesn't require any XS
 package.
 
-# COMMAND LINE OPTIONS
+# OPTIONS
 
-In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), Stardust accepts following
+In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), stardust accepts following
 options(s).
 
 - \--max-workers=\#

@@ -16,6 +16,7 @@ my $module = 'Stardust';
 
 my $build = Module::Build::My->new(
     module_name             => $module,
+    dist_version_from       => 'script/stardust.pl',
     license                 => 'perl',
     requires                => {
         'perl'                  => 5.008_001,
