@@ -102,12 +102,12 @@ it was adapted to doesn't use any other modules than [Plack](https://metacpan.or
 
 # LIMITATIONS
 
-Perl on Windows systems (MSWin32 and cygwin) emulates fork and waitpid functions
-and uses threads internally. See [perlfork](https://metacpan.org/pod/perlfork) (MSWin32) and [perlcygwin](https://metacpan.org/pod/perlcygwin)
-(cygwin) for details and limitations.
+Perl on Windows systems (MSWin32 and cygwin) emulates ["fork" in perlfunc](https://metacpan.org/pod/perlfunc#fork) and
+["waitpid" in perlfunc](https://metacpan.org/pod/perlfunc#waitpid) functions and uses threads internally. See [perlfork](https://metacpan.org/pod/perlfork)
+(MSWin32) and [perlcygwin](https://metacpan.org/pod/perlcygwin) (cygwin) for details and limitations.
 
-It might be better option to use on this system the server with explicit threads
-implementation, i.e. [Thrall](https://metacpan.org/pod/Thrall).
+It might be better option to use on this system the server with explicit
+[threads](https://metacpan.org/pod/threads) implementation, i.e. [Thrall](https://metacpan.org/pod/Thrall).
 
 For Cygwin the `perl-libwin32` package is highly recommended, because of
 [Win32::Process](https://metacpan.org/pod/Win32::Process) module which helps to terminate stalled worker processes.
@@ -132,10 +132,13 @@ See [https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003](https://rt.perl.
 [https://github.com/dex4er/Thrall/issues/5](https://github.com/dex4er/Thrall/issues/5) for more information about this
 issue.
 
-Harakiri mode fails with message:
+The server fails when worker process calls ["exit" in perlfunc](https://metacpan.org/pod/perlfunc#exit) function:
 
     Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
     0x22dcc0c at lib/Plack/Handler/Starlight.pm line 140.
+
+It means that Harakiri mode can't work and the server have to be started with
+`--max-reqs-per-child=inf` option.
 
 See [https://rt.perl.org/Public/Bug/Display.html?id=40565](https://rt.perl.org/Public/Bug/Display.html?id=40565) and
 [https://github.com/dex4er/Starlight/issues/1](https://github.com/dex4er/Starlight/issues/1) for more information about this
