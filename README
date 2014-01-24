@@ -21,7 +21,7 @@ NOTES
     was adapted to doesn't use any other modules than Plack.
 
 SEE ALSO
-    stardust, Thrall, Starlet, Starman
+    Stardust, Thrall, Starlet, Starman
 
 LIMITATIONS
     Perl on Windows systems (MSWin32 and cygwin) emulates fork and waitpid

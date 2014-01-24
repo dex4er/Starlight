@@ -129,7 +129,7 @@ it was adapted to doesn't use any other modules than L<Plack>.
 
 =head1 SEE ALSO
 
-L<stardust>,
+L<Stardust>,
 L<Thrall>,
 L<Starlet>,
 L<Starman>

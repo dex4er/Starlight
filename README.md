@@ -95,7 +95,7 @@ it was adapted to doesn't use any other modules than [Plack](https://metacpan.or
 
 # SEE ALSO
 
-[stardust](https://metacpan.org/pod/stardust),
+[Stardust](https://metacpan.org/pod/Stardust),
 [Thrall](https://metacpan.org/pod/Thrall),
 [Starlet](https://metacpan.org/pod/Starlet),
 [Starman](https://metacpan.org/pod/Starman)
