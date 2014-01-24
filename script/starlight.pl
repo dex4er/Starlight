@@ -148,6 +148,8 @@ L<Win32::Process> module which helps to terminate stalled worker processes.
 
 =head1 BUGS
 
+=head2 Windows
+
 There is a problem with Perl threads implementation which occurs on Windows
 systems (MSWin32). Cygwin version seems to be correct.
 

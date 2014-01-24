@@ -114,6 +114,8 @@ For Cygwin the `perl-libwin32` package is highly recommended, because of
 
 # BUGS
 
+## Windows
+
 There is a problem with Perl threads implementation which occurs on Windows
 systems (MSWin32). Cygwin version seems to be correct.
 
