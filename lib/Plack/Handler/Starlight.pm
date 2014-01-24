@@ -1,18 +1,18 @@
-package Plack::Handler::Stardust;
+package Plack::Handler::Starlight;
 
 use strict;
 use warnings;
 
 our $VERSION = '0.0100';
 
-use base qw(Stardust::Server);
+use base qw(Starlight::Server);
 
 use POSIX qw(:sys_wait_h);
 use Plack::Util;
 
 use constant CYGWIN_KILL_PROCESS => $^O eq 'cygwin' && eval { require Win32::Process; 1; };
 
-use constant DEBUG => $ENV{PERL_STARDUST_DEBUG};
+use constant DEBUG => $ENV{PERL_STARLIGHT_DEBUG};
 
 sub new {
     my ($klass, %args) = @_;

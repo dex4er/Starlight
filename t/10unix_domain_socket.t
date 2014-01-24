@@ -23,7 +23,7 @@ my $pid = fork;
 if ( $pid == 0 ) {
     # server
     my $loader = Plack::Loader->load(
-        'Stardust',
+        'Starlight',
         max_workers => 5,
         socket => $filename,
     );
@@ -44,7 +44,7 @@ my $client = IO::Socket::UNIX->new(
 
 $client->syswrite("GET / HTTP/1.0\015\012\015\012");
 $client->sysread(my $buf, 1024);
-like $buf, qr/Stardust/;
+like $buf, qr/Starlight/;
 like $buf, qr/HELLO UNIX/;
 
 sleep 1;

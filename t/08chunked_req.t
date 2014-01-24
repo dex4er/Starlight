@@ -18,7 +18,7 @@ if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BR
 }
 
 $Plack::Test::Impl = "Server";
-$ENV{PLACK_SERVER} = 'Stardust';
+$ENV{PLACK_SERVER} = 'Starlight';
 
 my $file = File::ShareDir::dist_dir('Plack') . "/baybridge.jpg";
 

@@ -25,6 +25,6 @@ push @Plack::Test::Suite::TEST,
         },
     ];
 
-Plack::Test::Suite->run_server_tests('Stardust');
+Plack::Test::Suite->run_server_tests('Starlight');
 done_testing();
 

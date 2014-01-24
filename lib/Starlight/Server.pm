@@ -1,4 +1,4 @@
-package Stardust::Server;
+package Starlight::Server;
 
 use strict;
 use warnings;
@@ -22,7 +22,7 @@ use Socket qw(IPPROTO_TCP TCP_NODELAY);
 use Try::Tiny;
 use Time::HiRes qw(time);
 
-use constant DEBUG            => $ENV{PERL_STARDUST_DEBUG};
+use constant DEBUG            => $ENV{PERL_STARLIGHT_DEBUG};
 use constant CHUNKSIZE        => 64 * 1024;
 use constant MAX_REQUEST_SIZE => 131072;
 
@@ -42,7 +42,7 @@ sub new {
         timeout              => $args{timeout} || 300,
         keepalive_timeout    => $args{keepalive_timeout} || 2,
         max_keepalive_reqs   => $args{max_keepalive_reqs} || 1,
-        server_software      => $args{server_software} || "Stardust/$VERSION ($^O)",
+        server_software      => $args{server_software} || "Starlight/$VERSION ($^O)",
         server_ready         => $args{server_ready} || sub {},
         ssl                  => $args{ssl},
         ipv6                 => $args{ipv6},
@@ -80,7 +80,7 @@ sub new {
     if ($args{max_workers} && $args{max_workers} > 1) {
         Carp::carp(
             "Forking in $class is deprecated. Falling back to the single process mode. ",
-            "If you need more workers, use Starman, Starlet or Stardust instead and run like `plackup -s Stardust`",
+            "If you need more workers, use Starman, Starlet or Starlight instead and run like `plackup -s Starlight`",
         );
     }
 

@@ -1,28 +1,28 @@
-[![Build Status](https://travis-ci.org/dex4er/Stardust.png?branch=master)](https://travis-ci.org/dex4er/Stardust)
+[![Build Status](https://travis-ci.org/dex4er/Starlight.png?branch=master)](https://travis-ci.org/dex4er/Starlight)
 
 # NAME
 
-stardust - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
+starlight - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
 
 # SYNOPSIS
 
-    $ stardust --workers=20 --max-reqs-per-child=100 app.psgi
+    $ starlight --workers=20 --max-reqs-per-child=100 app.psgi
 
-    $ stardust --port=80 --ipv6=1 app.psgi
+    $ starlight --port=80 --ipv6=1 app.psgi
 
-    $ stardust --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
+    $ starlight --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
 
-    $ stardust --socket=/tmp/stardust.sock app.psgi
+    $ starlight --socket=/tmp/starlight.sock app.psgi
 
 # DESCRIPTION
 
-Stardust is a standalone HTTP/1.1 server with keep-alive support. It uses
+Starlight is a standalone HTTP/1.1 server with keep-alive support. It uses
 pre-forking. It is pure-Perl implementation which doesn't require any XS
 package.
 
 # OPTIONS
 
-In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), stardust accepts following
+In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), starlight accepts following
 options(s).
 
 - \--max-workers=\#
@@ -61,7 +61,7 @@ options(s).
 
 - \--main-process-delay=\#
 
-    the Stardust does not synchronize its processes and it requires a small delay in
+    the Starlight does not synchronize its processes and it requires a small delay in
     main process so it doesn't consume all CPU. (default: 0.1)
 
 - \--ssl=\#
@@ -89,13 +89,13 @@ options(s).
 
 # NOTES
 
-Stardust was started as a fork of [Thrall](https://metacpan.org/pod/Thrall) server which is a fork of
+Starlight was started as a fork of [Thrall](https://metacpan.org/pod/Thrall) server which is a fork of
 [Starlet](https://metacpan.org/pod/Starlet) server. It has almost the same code as [Thrall](https://metacpan.org/pod/Thrall) and [Starlet](https://metacpan.org/pod/Starlet) and
 it was adapted to doesn't use any other modules than [Plack](https://metacpan.org/pod/Plack).
 
 # SEE ALSO
 
-[Stardust](https://metacpan.org/pod/Stardust),
+[Starlight](https://metacpan.org/pod/Starlight),
 [Thrall](https://metacpan.org/pod/Thrall),
 [Starlet](https://metacpan.org/pod/Starlet),
 [Starman](https://metacpan.org/pod/Starman)
@@ -135,19 +135,19 @@ issue.
 Harakiri mode fails with message:
 
     Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
-    0x22dcc0c at lib/Plack/Handler/Stardust.pm line 140.
+    0x22dcc0c at lib/Plack/Handler/Starlight.pm line 140.
 
 See [https://rt.perl.org/Public/Bug/Display.html?id=40565](https://rt.perl.org/Public/Bug/Display.html?id=40565) and
-[https://github.com/dex4er/Stardust/issues/1](https://github.com/dex4er/Stardust/issues/1) for more information about this
+[https://github.com/dex4er/Starlight/issues/1](https://github.com/dex4er/Starlight/issues/1) for more information about this
 issue.
 
 ## Reporting
 
 If you find the bug or want to implement new features, please report it at
-[https://github.com/dex4er/Stardust/issues](https://github.com/dex4er/Stardust/issues)
+[https://github.com/dex4er/Starlight/issues](https://github.com/dex4er/Starlight/issues)
 
 The code repository is available at
-[http://github.com/dex4er/Stardust](http://github.com/dex4er/Stardust)
+[http://github.com/dex4er/Starlight](http://github.com/dex4er/Starlight)
 
 # AUTHORS
 

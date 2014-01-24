@@ -15,7 +15,7 @@ if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BR
 }
 
 my $thrall = Plack::Loader->load(
-    'Stardust',
+    'Starlight',
     min_reqs_per_child => 5,
     max_reqs_per_child => 10,
 );

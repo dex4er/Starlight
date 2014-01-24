@@ -10,13 +10,13 @@ use Module::Build::My;
 
 use Config;
 
-my $module = 'Stardust';
+my $module = 'Starlight';
 
 (my $dist = $module) =~ s/::/-/g;
 
 my $build = Module::Build::My->new(
     module_name             => $module,
-    dist_version_from       => 'script/stardust.pl',
+    dist_version_from       => 'script/starlight.pl',
     license                 => 'perl',
     requires                => {
         'perl'                  => 5.008_001,
@@ -31,7 +31,7 @@ my $build = Module::Build::My->new(
         'Test::TCP'             => 0.15,
     },
     script_files => [
-        'script/stardust.pl',
+        'script/starlight.pl',
     ],
     auto_configure_requires => 0,
     create_makefile_pl      => 'traditional',

@@ -2,21 +2,21 @@
 
 =head1 NAME
 
-stardust - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
+starlight - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
 
 =head1 SYNOPSIS
 
-  $ stardust --workers=20 --max-reqs-per-child=100 app.psgi
+  $ starlight --workers=20 --max-reqs-per-child=100 app.psgi
 
-  $ stardust --port=80 --ipv6=1 app.psgi
+  $ starlight --port=80 --ipv6=1 app.psgi
 
-  $ stardust --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
+  $ starlight --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
 
-  $ stardust --socket=/tmp/stardust.sock app.psgi
+  $ starlight --socket=/tmp/starlight.sock app.psgi
 
 =head1 DESCRIPTION
 
-Stardust is a standalone HTTP/1.1 server with keep-alive support. It uses
+Starlight is a standalone HTTP/1.1 server with keep-alive support. It uses
 pre-forking. It is pure-Perl implementation which doesn't require any XS
 package.
 
@@ -35,11 +35,11 @@ our $VERSION = '0.0100';
 use Plack::Runner;
 
 sub version {
-    print "Stardust $VERSION\n";
+    print "Starlight $VERSION\n";
 }
 
 my $runner = Plack::Runner->new(
-    server     => 'Stardust',
+    server     => 'Starlight',
     env        => 'deployment',
     loader     => 'Delayed',
     version_cb => \&version,
@@ -50,7 +50,7 @@ $runner->run;
 
 =head1 OPTIONS
 
-In addition to the options supported by L<plackup>, stardust accepts following
+In addition to the options supported by L<plackup>, starlight accepts following
 options(s).
 
 =over
@@ -91,7 +91,7 @@ doing a "slow-restart". (default: none)
 
 =item --main-process-delay=#
 
-the Stardust does not synchronize its processes and it requires a small delay in
+the Starlight does not synchronize its processes and it requires a small delay in
 main process so it doesn't consume all CPU. (default: 0.1)
 
 =item --ssl=#
@@ -123,13 +123,13 @@ the socket file name means that abstract socket address will be created.
 
 =head1 NOTES
 
-Stardust was started as a fork of L<Thrall> server which is a fork of
+Starlight was started as a fork of L<Thrall> server which is a fork of
 L<Starlet> server. It has almost the same code as L<Thrall> and L<Starlet> and
 it was adapted to doesn't use any other modules than L<Plack>.
 
 =head1 SEE ALSO
 
-L<Stardust>,
+L<Starlight>,
 L<Thrall>,
 L<Starlet>,
 L<Starman>
@@ -169,19 +169,19 @@ issue.
 Harakiri mode fails with message:
 
   Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
-  0x22dcc0c at lib/Plack/Handler/Stardust.pm line 140.
+  0x22dcc0c at lib/Plack/Handler/Starlight.pm line 140.
 
 See L<https://rt.perl.org/Public/Bug/Display.html?id=40565> and
-L<https://github.com/dex4er/Stardust/issues/1> for more information about this
+L<https://github.com/dex4er/Starlight/issues/1> for more information about this
 issue.
 
 =head2 Reporting
 
 If you find the bug or want to implement new features, please report it at
-L<https://github.com/dex4er/Stardust/issues>
+L<https://github.com/dex4er/Starlight/issues>
 
 The code repository is available at
-L<http://github.com/dex4er/Stardust>
+L<http://github.com/dex4er/Starlight>
 
 =head1 AUTHORS
 

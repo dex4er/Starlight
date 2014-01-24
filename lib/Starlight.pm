@@ -1,28 +1,28 @@
-package Stardust;
+package Starlight;
 
 =head1 NAME
 
-Stardust - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
+Starlight - a simple and pure-Perl PSGI/Plack HTTP server with pre-forks
 
 =head1 SYNOPSIS
 
-  $ plackup -s Stardust --port=80 [options] your-app.psgi
+  $ plackup -s Starlight --port=80 [options] your-app.psgi
 
-  $ plackup -s Stardust --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt [options] your-app.psgi
+  $ plackup -s Starlight --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt [options] your-app.psgi
 
-  $ plackup -s Stardust --port=80 --ipv6 [options] your-app.psgi
+  $ plackup -s Starlight --port=80 --ipv6 [options] your-app.psgi
 
-  $ plackup -s Stardust --socket=/tmp/stardust.sock [options] your-app.psgi
+  $ plackup -s Starlight --socket=/tmp/starlight.sock [options] your-app.psgi
 
-  $ stardust your-app.psgi
+  $ starlight your-app.psgi
 
 =head1 DESCRIPTION
 
-Stardust is a standalone HTTP/1.1 server with keep-alive support. It uses
+Starlight is a standalone HTTP/1.1 server with keep-alive support. It uses
 pre-forking. It is pure-Perl implementation which doesn't require any XS
 package.
 
-See L<plackup> and L<stardust> (lower case) for available command line
+See L<plackup> and L<starlight> (lower case) for available command line
 options.
 
 =for readme stop
@@ -44,7 +44,7 @@ __END__
 
 =head1 SEE ALSO
 
-L<stardust>,
+L<starlight>,
 L<Thrall>,
 L<Starlet>,
 L<Starman>

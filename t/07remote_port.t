@@ -34,7 +34,7 @@ test_tcp(
     server => sub {
         my $port = shift;
         my $loader = Plack::Loader->load(
-            'Stardust',
+            'Starlight',
             port => $port,
             max_workers => 5,
         );

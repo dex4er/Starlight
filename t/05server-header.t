@@ -22,19 +22,19 @@ test_tcp(
         my $ua = HTTP::Tiny->new;
         my $res = $ua->get("http://localhost:$port/");
         ok( $res->{success} );
-        like( scalar $res->{headers}{server}, qr/Stardust/ );
+        like( scalar $res->{headers}{server}, qr/Starlight/ );
         unlike( scalar $res->{headers}{server}, qr/Hello/ );
 
         $res = $ua->get("http://localhost:$port/?server=1");
         ok( $res->{success} );
-        unlike( scalar $res->{headers}{server}, qr/Stardust/ );
+        unlike( scalar $res->{headers}{server}, qr/Starlight/ );
         like( scalar $res->{headers}{server}, qr/Hello/ );
         sleep 1;
     },
     server => sub {
         my $port = shift;
         my $loader = Plack::Loader->load(
-            'Stardust',
+            'Starlight',
             port => $port,
             max_workers => 5,
         );

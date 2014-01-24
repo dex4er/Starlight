@@ -15,7 +15,7 @@ if ($^O eq 'MSWin32' and not $ENV{PERL_TEST_BROKEN}) {
 }
 
 $Plack::Test::Impl = 'Server';
-$ENV{PLACK_SERVER} = 'Stardust';
+$ENV{PLACK_SERVER} = 'Starlight';
 
 test_psgi
     app => sub {
