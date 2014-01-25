@@ -20,6 +20,10 @@ Starlight is a standalone HTTP/1.1 server with keep-alive support. It uses
 pre-forking. It is pure-Perl implementation which doesn't require any XS
 package.
 
+Starlight was started as a fork of L<Thrall> server which is a fork of
+L<Starlet> server. It has almost the same code as L<Thrall> and L<Starlet> and
+it was adapted to doesn't use any other modules than L<Plack>.
+
 =for readme stop
 
 =cut
@@ -120,12 +124,6 @@ the socket file name means that abstract socket address will be created.
 =back
 
 =for readme continue
-
-=head1 NOTES
-
-Starlight was started as a fork of L<Thrall> server which is a fork of
-L<Starlet> server. It has almost the same code as L<Thrall> and L<Starlet> and
-it was adapted to doesn't use any other modules than L<Plack>.
 
 =head1 SEE ALSO
 
