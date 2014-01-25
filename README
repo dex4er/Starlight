@@ -15,7 +15,6 @@ DESCRIPTION
     uses pre-forking. It is pure-Perl implementation which doesn't require
     any XS package.
 
-NOTES
     Starlight was started as a fork of Thrall server which is a fork of
     Starlet server. It has almost the same code as Thrall and Starlet and it
     was adapted to doesn't use any other modules than Plack.
