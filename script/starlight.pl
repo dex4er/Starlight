@@ -24,6 +24,9 @@ Starlight was started as a fork of L<Thrall> server which is a fork of
 L<Starlet> server. It has almost the same code as L<Thrall> and L<Starlet> and
 it was adapted to doesn't use any other modules than L<Plack>.
 
+Starlight is created for Unix-like systems but it should also work on Windows
+with some limitations.
+
 =for readme stop
 
 =cut

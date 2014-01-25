@@ -24,6 +24,9 @@ Starlight was started as a fork of [Thrall](https://metacpan.org/pod/Thrall) ser
 [Starlet](https://metacpan.org/pod/Starlet) server. It has almost the same code as [Thrall](https://metacpan.org/pod/Thrall) and [Starlet](https://metacpan.org/pod/Starlet) and
 it was adapted to doesn't use any other modules than [Plack](https://metacpan.org/pod/Plack).
 
+Starlight is created for Unix-like systems but it should also work on Windows
+with some limitations.
+
 # OPTIONS
 
 In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), starlight accepts following
