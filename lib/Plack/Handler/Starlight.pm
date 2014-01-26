@@ -3,7 +3,7 @@ package Plack::Handler::Starlight;
 use strict;
 use warnings;
 
-our $VERSION = '0.0100';
+our $VERSION = '0.0200';
 
 use base qw(Starlight::Server);
 
