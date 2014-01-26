@@ -7,6 +7,9 @@ our $VERSION = '0.0200';
 
 use base qw(Starlight::Server);
 
+use Carp ();
+use Fcntl ();
+use File::Spec;
 use POSIX qw(:sys_wait_h);
 use Plack::Util;
 
@@ -15,7 +18,7 @@ use constant CYGWIN_KILL_PROCESS => $^O eq 'cygwin' && eval { require Win32::Pro
 use constant DEBUG => $ENV{PERL_STARLIGHT_DEBUG};
 
 sub new {
-    my ($klass, %args) = @_;
+    my ($class, %args) = @_;
 
     # setup before instantiation
     my $listen_sock;
@@ -26,7 +29,7 @@ sub new {
     }
 
     # instantiate and set the variables
-    my $self = $klass->SUPER::new(%args);
+    my $self = $class->SUPER::new(%args);
     if ($^O eq 'MSWin32') {
         # forks are emulated
         $self->{is_multithread}  = Plack::Util::TRUE;
@@ -49,6 +52,43 @@ sub new {
 
 sub run {
     my($self, $app) = @_;
+
+    my ($pidfh, $pidfile);
+    if ($self->{pid}) {
+        $pidfile = File::Spec->rel2abs($self->{pid});
+        if (defined *Fcntl::O_EXCL{CODE}) {
+            sysopen $pidfh, $pidfile, Fcntl::O_WRONLY|Fcntl::O_CREAT|Fcntl::O_EXCL
+                                               or Carp::carp("Cannot open pidfile: $self->{pid}: $!");
+        } else {
+            open $pidfh, '>', $pidfile         or Carp::carp("Cannot open pidfile: $self->{pid}: $!");
+        }
+    }
+    if (defined $self->{error_log}) {
+        open STDERR, '>>', $self->{error_log}  or Carp::carp("Cannot open error log file: $self->{error_log}: $!");
+    }
+    if ($self->{daemonize}) {
+        chdir File::Spec->rootdir              or Carp::carp("Cannot chdir to root directory: $!");
+
+        open STDIN,  '<', File::Spec->devnull  or Carp::carp("Cannot open null device for reading: $!");
+        open STDOUT, '>', File::Spec->devnull  or Carp::carp("Cannot open null device for writing: $!");
+
+        defined(my $pid = fork)                or Carp::carp("Cannot fork: $!");
+        if ($self->{pid} and $pid) {
+            print $pidfh "$pid\n"              or Carp::carp("Cannot write pidfile $self->{pid}: $!");
+            close $pidfh;
+            exit;
+        }
+
+        close $pidfh;
+
+        if (not defined $self->{error_log}) {
+            open STDERR, '>&', \*STDOUT        or Carp::carp("Cannot dup null device for writing: $!");
+        }
+    }
+
+    if ($pidfile) {
+        $self->_add_to_unlink($pidfile);
+    }
 
     warn "*** starting main process $$" if DEBUG;
     $self->setup_listener();

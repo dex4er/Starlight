@@ -8,6 +8,7 @@ our $VERSION = '0.0200';
 use Config;
 
 use Carp ();
+use File::Spec;
 use Plack;
 use Plack::HTTPParser qw( parse_http_request );
 use IO::Socket::INET;
@@ -48,6 +49,9 @@ sub new {
         ipv6                 => $args{ipv6},
         ssl_key_file         => $args{ssl_key_file},
         ssl_cert_file        => $args{ssl_cert_file},
+        daemonize            => $args{daemonize},
+        pid                  => $args{pid},
+        error_log            => $args{error_log},
         min_reqs_per_child   => (
             defined $args{min_reqs_per_child}
                 ? $args{min_reqs_per_child} : undef,
@@ -156,7 +160,7 @@ sub setup_listener {
     }
 
     if ($self->{_listen_sock_is_unix} && not $args{Local} =~ /^\0/) {
-        push @{$self->{_unlink}}, $args{Local};
+        $self->_add_to_unlink(File::Spec->rel2abs($args{Local}));
     }
 
     $self->{server_ready}->({ %$self, proto => $self->{ssl} ? 'https' : 'http' });
@@ -564,6 +568,11 @@ sub write_all {
         $off += $ret;
     }
     return length $buf;
+}
+
+sub _add_to_unlink {
+    my ($self, $filename) = @_;
+    push @{$self->{_unlink}}, File::Spec->rel2abs($filename);
 }
 
 sub DESTROY {
