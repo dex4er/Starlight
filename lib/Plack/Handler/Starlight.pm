@@ -13,7 +13,7 @@ use File::Spec;
 use POSIX qw(:sys_wait_h);
 use Plack::Util;
 
-use constant CYGWIN_KILL_PROCESS => $^O eq 'cygwin' && eval { require Win32::Process; 1; };
+use constant HAS_WIN32_PROCESS => $^O eq 'cygwin' && eval { require Win32::Process; 1; };
 
 use constant DEBUG => $ENV{PERL_STARLIGHT_DEBUG};
 
@@ -131,7 +131,7 @@ sub run {
                 warn "*** stopping process $pid" if DEBUG;
                 kill $sigterm, $pid;
             }
-            if (CYGWIN_KILL_PROCESS) {
+            if (HAS_WIN32_PROCESS) {
                 $self->_sleep(1);
                 foreach my $pid (keys %{$self->{processes}}) {
                     my $winpid = Cygwin::pid_to_winpid($pid) or next;
@@ -144,6 +144,9 @@ sub run {
                 warn "*** waiting for process ", $pid if DEBUG;
                 waitpid $pid, 0;
             }
+        }
+        if ($^O eq 'cygwin' and not HAS_WIN32_PROCESS) {
+            warn "Win32::Process is not installed. Some processes might be still active.\n";
         }
         warn "*** stopping main process $$" if DEBUG;
         exit 0;
