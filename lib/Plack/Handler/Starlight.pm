@@ -53,6 +53,12 @@ sub new {
 sub run {
     my($self, $app) = @_;
 
+    if ($^O eq 'MSWin32') {
+        foreach my $arg (qw(daemonize pid)) {
+            die "$arg parameter is not supported on this platform ($^O)\n" if $self->{$arg};
+        }
+    }
+
     my ($pidfh, $pidfile);
     if ($self->{pid}) {
         $pidfile = File::Spec->rel2abs($self->{pid});
@@ -63,10 +69,13 @@ sub run {
             open $pidfh, '>', $pidfile         or Carp::carp("Cannot open pidfile: $self->{pid}: $!");
         }
     }
+
     if (defined $self->{error_log}) {
         open STDERR, '>>', $self->{error_log}  or Carp::carp("Cannot open error log file: $self->{error_log}: $!");
     }
+
     if ($self->{daemonize}) {
+
         chdir File::Spec->rootdir              or Carp::carp("Cannot chdir to root directory: $!");
 
         open STDIN,  '<', File::Spec->devnull  or Carp::carp("Cannot open null device for reading: $!");
@@ -79,7 +88,7 @@ sub run {
             exit;
         }
 
-        close $pidfh;
+        close $pidfh if $pidfh;
 
         if (not defined $self->{error_log}) {
             open STDERR, '>&', \*STDOUT        or Carp::carp("Cannot dup null device for writing: $!");
