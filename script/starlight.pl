@@ -10,7 +10,8 @@ starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
 
   $ starlight --port=80 --ipv6=1 app.psgi
 
-  $ starlight --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
+  $ starlight --port=443 --ssl=1 --ssl-key-file=file.key
+              --ssl-cert-file=file.crt app.psgi
 
   $ starlight --socket=/tmp/starlight.sock app.psgi
 
@@ -57,8 +58,8 @@ $runner->run;
 
 =head1 OPTIONS
 
-In addition to the options supported by L<plackup>, starlight accepts following
-options(s).
+In addition to the options supported by L<plackup>, starlight accepts
+following options(s).
 
 =head2 --max-workers=#
 
@@ -96,8 +97,8 @@ doing a "slow-restart". (default: none)
 
 =head2 --main-process-delay=#
 
-the Starlight does not synchronize its processes and it requires a small delay in
-main process so it doesn't consume all CPU. (default: 0.1)
+the Starlight does not synchronize its processes and it requires a small delay
+in main process so it doesn't consume all CPU. (default: 0.1)
 
 =head2 --ssl=#
 
@@ -120,6 +121,22 @@ enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 0)
 enables UNIX socket support. The L<IO::Socket::UNIX> module is required. The
 socket file have to be not yet created. The first character C<@> or C<\0> in
 the socket file name means that abstract socket address will be created.
+(default: none)
+
+=head2 --daemonize=#
+
+makes the process run in the background. It doesn't work (yet) in native
+Windows (MSWin32). (default: 0)
+
+=head2 --pid=#
+
+specify the pid file path. Use it with C<-D|--daemonize> option.
+(default: none)
+
+=head2 --error-log=#
+
+specify the pathname of a file where the error log should be written. This
+enables you to still have access to the errors when using C<--daemonize>.
 (default: none)
 
 =for readme continue
@@ -174,8 +191,8 @@ It means that Harakiri mode can't work and the server have to be started with
 C<--max-reqs-per-child=inf> option.
 
 See L<https://rt.perl.org/Public/Bug/Display.html?id=40565> and
-L<https://github.com/dex4er/Starlight/issues/1> for more information about this
-issue.
+L<https://github.com/dex4er/Starlight/issues/1> for more information about
+this issue.
 
 =head2 Reporting
 
