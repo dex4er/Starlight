@@ -53,51 +53,7 @@ sub new {
 sub run {
     my($self, $app) = @_;
 
-    if ($^O eq 'MSWin32') {
-        foreach my $arg (qw(daemonize pid)) {
-            die "$arg parameter is not supported on this platform ($^O)\n" if $self->{$arg};
-        }
-    }
-
-    my ($pidfh, $pidfile);
-    if ($self->{pid}) {
-        $pidfile = File::Spec->rel2abs($self->{pid});
-        if (defined *Fcntl::O_EXCL{CODE}) {
-            sysopen $pidfh, $pidfile, Fcntl::O_WRONLY|Fcntl::O_CREAT|Fcntl::O_EXCL
-                                               or Carp::carp("Cannot open pidfile: $self->{pid}: $!");
-        } else {
-            open $pidfh, '>', $pidfile         or Carp::carp("Cannot open pidfile: $self->{pid}: $!");
-        }
-    }
-
-    if (defined $self->{error_log}) {
-        open STDERR, '>>', $self->{error_log}  or Carp::carp("Cannot open error log file: $self->{error_log}: $!");
-    }
-
-    if ($self->{daemonize}) {
-
-        chdir File::Spec->rootdir              or Carp::carp("Cannot chdir to root directory: $!");
-
-        open STDIN,  '<', File::Spec->devnull  or Carp::carp("Cannot open null device for reading: $!");
-        open STDOUT, '>', File::Spec->devnull  or Carp::carp("Cannot open null device for writing: $!");
-
-        defined(my $pid = fork)                or Carp::carp("Cannot fork: $!");
-        if ($self->{pid} and $pid) {
-            print $pidfh "$pid\n"              or Carp::carp("Cannot write pidfile $self->{pid}: $!");
-            close $pidfh;
-            exit;
-        }
-
-        close $pidfh if $pidfh;
-
-        if (not defined $self->{error_log}) {
-            open STDERR, '>&', \*STDOUT        or Carp::carp("Cannot dup null device for writing: $!");
-        }
-    }
-
-    if ($pidfile) {
-        $self->_add_to_unlink($pidfile);
-    }
+    $self->_daemonize();
 
     warn "*** starting main process $$" if DEBUG;
     $self->setup_listener();
@@ -171,6 +127,58 @@ sub run {
             $self->_sleep($self->{spawn_interval});
         }
     }
+}
+
+sub _daemonize {
+    my $self = shift;
+
+    if ($^O eq 'MSWin32') {
+        foreach my $arg (qw(daemonize pid)) {
+            die "$arg parameter is not supported on this platform ($^O)\n" if $self->{$arg};
+        }
+    }
+
+    my ($pidfh, $pidfile);
+    if ($self->{pid}) {
+        $pidfile = File::Spec->rel2abs($self->{pid});
+        if (defined *Fcntl::O_EXCL{CODE}) {
+            sysopen $pidfh, $pidfile, Fcntl::O_WRONLY|Fcntl::O_CREAT|Fcntl::O_EXCL
+                                               or die "Cannot open pid file: $self->{pid}: $!\n";
+        } else {
+            open $pidfh, '>', $pidfile         or die "Cannot open pid file: $self->{pid}: $!\n";
+        }
+    }
+
+    if (defined $self->{error_log}) {
+        open STDERR, '>>', $self->{error_log}  or die "Cannot open error log file: $self->{error_log}: $!\n";
+    }
+
+    if ($self->{daemonize}) {
+
+        chdir File::Spec->rootdir              or die "Cannot chdir to root directory: $!\n";
+
+        open STDIN,  '<', File::Spec->devnull  or die "Cannot open null device for reading: $!\n";
+        open STDOUT, '>', File::Spec->devnull  or die "Cannot open null device for writing: $!\n";
+
+        defined(my $pid = fork)                or die "Cannot fork: $!\n";
+        if ($self->{pid} and $pid) {
+            print $pidfh "$pid\n"              or die "Cannot write pidfile $self->{pid}: $!\n";
+            close $pidfh;
+            exit;
+        }
+
+        close $pidfh if $pidfh;
+
+        if (not defined $self->{error_log}) {
+            open STDERR, '>&', \*STDOUT        or die "Cannot dup null device for writing: $!\n";
+        }
+    }
+
+    if ($pidfile) {
+        $self->_add_to_unlink($pidfile);
+    }
+
+    return;
 }
 
 sub _sleep {
