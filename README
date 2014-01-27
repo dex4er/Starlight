@@ -6,7 +6,8 @@ SYNOPSIS
 
       $ starlight --port=80 --ipv6=1 app.psgi
 
-      $ starlight --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
+      $ starlight --port=443 --ssl=1 --ssl-key-file=file.key
+                  --ssl-cert-file=file.crt app.psgi
 
       $ starlight --socket=/tmp/starlight.sock app.psgi
 
