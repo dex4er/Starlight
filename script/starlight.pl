@@ -61,81 +61,82 @@ $runner->run;
 In addition to the options supported by L<plackup>, starlight accepts
 following options(s).
 
-=head2 --max-workers=#
+=head2 --max-workers
 
-number of worker processes (default: 10)
+Number of worker processes. (default: 10)
 
-=head2 --timeout=#
+=head2 --timeout
 
-seconds until timeout (default: 300)
+Seconds until timeout. (default: 300)
 
-=head2 --keepalive-timeout=#
+=head2 --keepalive-timeout
 
-timeout for persistent connections (default: 2)
+Timeout for persistent connections. (default: 2)
 
-=head2 --max-keepalive-reqs=#
+=head2 --max-keepalive-reqs
 
-max. number of requests allowed per single persistent connection.  If set to
-one, persistent connections are disabled (default: 1)
+Max. number of requests allowed per single persistent connection. If set to
+one, persistent connections are disabled. (default: 1)
 
-=head2 --max-reqs-per-child=#
+=head2 --max-reqs-per-child
 
-max. number of requests to be handled before a worker process exits (default:
+Max. number of requests to be handled before a worker process exits. (default:
 1000)
 
-=head2 --min-reqs-per-child=#
+=head2 --min-reqs-per-child
 
-if set, randomizes the number of requests handled by a single worker process
-between the value and that supplied by C<--max-reqs-per-chlid> (default: none)
+If set, randomizes the number of requests handled by a single worker process
+between the value and that supplied by C<--max-reqs-per-chlid>.
+(default: none)
 
-=head2 --spawn-interval=#
+=head2 --spawn-interval
 
-if set, worker processes will not be spawned more than once than every given
+If set, worker processes will not be spawned more than once than every given
 seconds.  Also, when SIGHUP is being received, no more than one worker
-processes will be collected every given seconds.  This feature is useful for
+processes will be collected every given seconds. This feature is useful for
 doing a "slow-restart". (default: none)
 
-=head2 --main-process-delay=#
+=head2 --main-process-delay
 
-the Starlight does not synchronize its processes and it requires a small delay
+The Starlight does not synchronize its processes and it requires a small delay
 in main process so it doesn't consume all CPU. (default: 0.1)
 
-=head2 --ssl=#
+=head2 --ssl
 
-enables SSL support. The L<IO::Socket::SSL> module is required. (default: 0)
+Enables SSL support. The L<IO::Socket::SSL> module is required. (default: 0)
 
-=head2 --ssl-key-file=#
+=head2 --ssl-key-file
 
-specifies the path to SSL key file. (default: none)
+Specifies the path to SSL key file. (default: none)
 
-=head2 --ssl-cert-file=#
+=head2 --ssl-cert-file
 
-specifies the path to SSL certificate file. (default: none)
+Specifies the path to SSL certificate file. (default: none)
 
-=head2 --ipv6=#
+=head2 --ipv6
 
-enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 0)
+Enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 0)
 
-=head2 --socket=#
+=head2 --socket
 
-enables UNIX socket support. The L<IO::Socket::UNIX> module is required. The
+Enables UNIX socket support. The L<IO::Socket::UNIX> module is required. The
 socket file have to be not yet created. The first character C<@> or C<\0> in
 the socket file name means that abstract socket address will be created.
 (default: none)
 
-=head2 --daemonize=#
+=head2 --daemonize
 
-makes the process run in the background. It doesn't work (yet) in native
+Makes the process run in the background. It doesn't work (yet) in native
 Windows (MSWin32). (default: 0)
 
-=head2 --pid=#
+=head2 --pid
 
-specify the pid file path. Use it with C<-D|--daemonize> option.
+Specify the pid file path. Use it with C<-D|--daemonize> option.
 (default: none)
 
-=head2 --error-log=#
+=head2 --error-log
 
-specify the pathname of a file where the error log should be written. This
+Specify the pathname of a file where the error log should be written. This
 enables you to still have access to the errors when using C<--daemonize>.
 (default: none)
 
