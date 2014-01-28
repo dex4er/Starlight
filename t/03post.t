@@ -15,6 +15,11 @@ if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BR
     exit 0;
 }
 
+if (not eval { HTTP::Tiny->VERSION(0.014) }) {
+    plan skip_all => 'HTTP::Tiny >= 0.014 required';
+    exit 0;
+}
+
 test_tcp(
     server => sub {
         my $port = shift;
