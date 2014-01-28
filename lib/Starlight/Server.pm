@@ -8,6 +8,7 @@ our $VERSION = '0.0200';
 use Config;
 
 use Carp ();
+use Errno ();
 use File::Spec;
 use Plack;
 use Plack::HTTPParser qw( parse_http_request );
@@ -17,7 +18,6 @@ use HTTP::Status;
 use List::Util qw(max sum);
 use Plack::Util;
 use Plack::TempBuffer;
-use POSIX qw(EINTR EAGAIN EWOULDBLOCK);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 
 use Try::Tiny;
@@ -28,6 +28,11 @@ use constant CHUNKSIZE        => 64 * 1024;
 use constant MAX_REQUEST_SIZE => 131072;
 
 use constant HAS_INET6        => eval { AF_INET6 && socket my $ipv6_socket, AF_INET6, SOCK_DGRAM, 0 };
+
+use constant EINTR            => exists &Errno::EINTR ? &Errno::EINTR : -1;
+use constant EAGAIN           => exists &Errno::EAGAIN ? &Errno::EAGAIN : -1;
+use constant EWOULDBLOCK      => exists &Errno::EWOULDBLOCK ? &Errno::EWOULDBLOCK : -1;
+
 
 my $null_io = do { open my $io, "<", \""; $io }; #"
 
