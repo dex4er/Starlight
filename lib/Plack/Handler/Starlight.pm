@@ -8,9 +8,10 @@ our $VERSION = '0.0200';
 use base qw(Starlight::Server);
 
 use Carp ();
+use Config ();
 use Fcntl ();
 use File::Spec;
-use POSIX qw(:sys_wait_h);
+use POSIX ();
 use Plack::Util;
 
 use constant HAS_WIN32_PROCESS => $^O eq 'cygwin' && eval { require Win32::Process; 1; };
@@ -64,7 +65,7 @@ sub run {
         my ($sig) = @_;
         warn "*** SIG$sig received in process $$" if DEBUG;
         local ($!, $?);
-        my $pid = waitpid(-1, WNOHANG);
+        my $pid = waitpid(-1, &POSIX::WNOHANG);
         return if $pid == -1;
         delete $self->{processes}->{$pid};
     };
@@ -168,6 +169,10 @@ sub _daemonize {
         }
 
         close $pidfh if $pidfh;
+
+        if ($Config::Config{d_setsid}) {
+            POSIX::setsid()                    or die "Cannot setsid: $!\n";
+        }
 
         if (not defined $self->{error_log}) {
             open STDERR, '>&', \*STDOUT        or die "Cannot dup null device for writing: $!\n";
