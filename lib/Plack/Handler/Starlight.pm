@@ -22,7 +22,6 @@ sub new {
     my ($class, %args) = @_;
 
     # setup before instantiation
-    my $listen_sock;
     my $max_workers = 10;
     for (qw(max_workers workers)) {
         $max_workers = delete $args{$_}
@@ -41,8 +40,6 @@ sub new {
         $self->{is_multithread}  = Plack::Util::FALSE;
         $self->{is_multiprocess} = Plack::Util::TRUE;
     };
-    $self->{listen_sock} = $listen_sock
-        if $listen_sock;
     $self->{max_workers} = $max_workers;
 
     $self->{main_process} = $$;
