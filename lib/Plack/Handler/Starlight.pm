@@ -48,6 +48,8 @@ sub new {
     $self->{main_process} = $$;
     $self->{processes} = +{};
 
+    $self->{_kill_stalled_processes_delay} = 10;
+
     $self;
 }
 
@@ -79,10 +81,14 @@ sub run {
             warn "*** SIG$sig received in process $$" if DEBUG;
             $self->{term_received}++;
         };
-        while (not $self->{term_received}) {
+        for (my $loop = 0; not $self->{term_received}; $loop++) {
             warn "*** running ", scalar keys %{$self->{processes}}, " processes" if DEBUG;
-            foreach my $pid (keys %{$self->{processes}}) {
-                delete $self->{processes}->{$pid} if not kill 0, $pid;
+            if ($loop >= $self->{_kill_stalled_processes_delay} / ($self->{main_process_delay}||1)) {
+                $loop = 0;
+                # check stalled processes once per n sec
+                foreach my $pid (keys %{$self->{processes}}) {
+                    delete $self->{processes}->{$pid} if not kill 0, $pid;
+                }
             }
             foreach my $n (1 + scalar keys %{$self->{processes}} .. $self->{max_workers}) {
                 $self->_create_process($app);
