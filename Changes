@@ -1,6 +1,6 @@
-0.0200  2014-01-26      Piotr Roszatycki <dexter@cpan.org>
+0.0200  2014-01-30      Piotr Roszatycki <dexter@cpan.org>
 
-?
+Accepts "daemonize", "pid" and "error-log" options.
 
 0.0100  2014-01-25      Piotr Roszatycki <dexter@cpan.org>
 
