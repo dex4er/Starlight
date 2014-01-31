@@ -94,6 +94,12 @@ AUTHORS
 
     Tatsuhiko Miyagawa
 
+    Some code based on Net::Server::Daemonize:
+
+    Jeremy Howard <j+daemonize@howard.fm>
+
+    Paul Seamons <paul@seamons.com>
+
 LICENSE
     Copyright (c) 2013-2014 Piotr Roszatycki <dexter@cpan.org>.
 

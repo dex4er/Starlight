@@ -244,6 +244,12 @@ Some code based on Plack:
 
 Tatsuhiko Miyagawa
 
+Some code based on Net::Server::Daemonize:
+
+Jeremy Howard <j+daemonize@howard.fm>
+
+Paul Seamons <paul@seamons.com>
+
 =head1 LICENSE
 
 Copyright (c) 2013-2014 Piotr Roszatycki <dexter@cpan.org>.

@@ -96,6 +96,27 @@ socket file have to be not yet created. The first character `@` or `\0` in
 the socket file name means that abstract socket address will be created.
 (default: none)
 
+## \--user
+
+Changes the user id or user name that the server process should switch to
+after binding to the port. The pid file, error log or unix socket also are
+created before changing privileges. This options is usually used if main
+process is started with root privileges beacause binding to the low-numbered
+(<1024) port. (default: none)
+
+## \--group
+
+Changes the group ids or group names that the server should switch to after
+binding to the port. The ids or names can be separated with comma or space
+character. (default: none)
+
+## \--umask
+
+Changes file mode creation mask. The ["umask" in perlfunc](https://metacpan.org/pod/perlfunc#umask) is an octal number
+representing disabled permissions bits for newly created files. It is usually
+`022` when group shouldn't have permission to write or `002` when group
+should have permission to write. (default: none)
+
 ## \--daemonize
 
 Makes the process run in the background. It doesn't work (yet) in native
@@ -192,6 +213,12 @@ kazeburo
 Some code based on Plack:
 
 Tatsuhiko Miyagawa
+
+Some code based on Net::Server::Daemonize:
+
+Jeremy Howard <j+daemonize@howard.fm>
+
+Paul Seamons <paul@seamons.com>
 
 # LICENSE
 

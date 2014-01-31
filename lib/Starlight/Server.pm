@@ -639,6 +639,7 @@ sub _daemonize {
     return;
 }
 
+# Taken from Net::Server::Daemonize
 sub _get_uid {
     my ($self, $user) = @_;
     my $uid  = ($user =~ /^(\d+)$/) ? $1 : getpwnam($user);
@@ -646,6 +647,7 @@ sub _get_uid {
     return $uid;
 }
 
+# Taken from Net::Server::Daemonize
 sub _get_gid {
     my ($self, @groups) = @_;
     my @gid;
@@ -664,6 +666,7 @@ sub _get_gid {
     return join(" ",$gid[0],@gid);
 }
 
+# Taken from Net::Server::Daemonize
 sub _set_uid {
     my ($self, $user) = @_;
     my $uid = $self->get_uid($user);
@@ -679,6 +682,7 @@ sub _set_uid {
     return 1;
 }
 
+# Taken from Net::Server::Daemonize
 sub _set_gid {
     my ($self, @groups) = @_;
     my $gids = $self->_get_gid(@groups);
