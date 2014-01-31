@@ -583,6 +583,150 @@ sub _add_to_unlink {
     push @{$self->{_unlink}}, File::Spec->rel2abs($filename);
 }
 
+sub _daemonize {
+    my $self = shift;
+
+    if ($^O eq 'MSWin32') {
+        foreach my $arg (qw(daemonize pid)) {
+            die "$arg parameter is not supported on this platform ($^O)\n" if $self->{$arg};
+        }
+    }
+
+    my ($pidfh, $pidfile);
+    if ($self->{pid}) {
+        $pidfile = File::Spec->rel2abs($self->{pid});
+        if (defined *Fcntl::O_EXCL{CODE}) {
+            sysopen $pidfh, $pidfile, Fcntl::O_WRONLY|Fcntl::O_CREAT|Fcntl::O_EXCL
+                                               or die "Cannot open pid file: $self->{pid}: $!\n";
+        } else {
+            open $pidfh, '>', $pidfile         or die "Cannot open pid file: $self->{pid}: $!\n";
+        }
+    }
+
+    if (defined $self->{error_log}) {
+        open STDERR, '>>', $self->{error_log}  or die "Cannot open error log file: $self->{error_log}: $!\n";
+    }
+
+    if ($self->{daemonize}) {
+
+        chdir File::Spec->rootdir              or die "Cannot chdir to root directory: $!\n";
+
+        open STDIN,  '<', File::Spec->devnull  or die "Cannot open null device for reading: $!\n";
+        open STDOUT, '>', File::Spec->devnull  or die "Cannot open null device for writing: $!\n";
+
+        defined(my $pid = fork)                or die "Cannot fork: $!\n";
+        if ($self->{pid} and $pid) {
+            print $pidfh "$pid\n"              or die "Cannot write pidfile $self->{pid}: $!\n";
+            close $pidfh;
+            exit;
+        }
+
+        close $pidfh if $pidfh;
+
+        if ($Config::Config{d_setsid}) {
+            POSIX::setsid()                    or die "Cannot setsid: $!\n";
+        }
+
+        if (not defined $self->{error_log}) {
+            open STDERR, '>&', \*STDOUT        or die "Cannot dup null device for writing: $!\n";
+        }
+    }
+
+    if ($pidfile) {
+        $self->_add_to_unlink($pidfile);
+    }
+
+    return;
+}
+
+sub _get_uid {
+    my ($self, $user) = @_;
+    my $uid  = ($user =~ /^(\d+)$/) ? $1 : getpwnam($user);
+    die "No such user \"$user\"\n" unless defined $uid;
+    return $uid;
+}
+
+sub _get_gid {
+    my ($self, @groups) = @_;
+    my @gid;
+
+    foreach my $group ( split( /[, ]+/, join(" ",@groups) ) ){
+        if( $group =~ /^\d+$/ ){
+            push @gid, $group;
+        }else{
+            my $id = getgrnam($group);
+            die "No such group \"$group\"\n" unless defined $id;
+            push @gid, $id;
+        }
+    }
+
+    die "No group found in arguments.\n" unless @gid;
+    return join(" ",$gid[0],@gid);
+}
+
+sub _set_uid {
+    my ($self, $user) = @_;
+    my $uid = $self->get_uid($user);
+
+    eval { POSIX::setuid($uid) };
+    if ($< != $uid || $> != $uid) { # check $> also (rt #21262)
+        $< = $> = $uid; # try again - needed by some 5.8.0 linux systems (rt #13450)
+        if ($< != $uid) {
+            die "Couldn't become uid \"$uid\": $!\n";
+        }
+    }
+
+    return 1;
+}
+
+sub _set_gid {
+    my ($self, @groups) = @_;
+    my $gids = $self->_get_gid(@groups);
+    my $gid  = (split /\s+/, $gids)[0];
+    eval { $) = $gids }; # store all the gids - this is really sort of optional
+
+    eval { POSIX::setgid($gid) };
+    if (! grep {$gid == $_} split /\s+/, $() { # look for any valid id in the list
+        die "Couldn't become gid \"$gid\": $!\n";
+    }
+
+    return 1;
+}
+
+sub _sleep {
+    my ($self, $t) = @_;
+    select undef, undef, undef, $t if $t;
+}
+
+sub _create_process {
+    my ($self, $app) = @_;
+    my $pid = fork;
+    return warn "cannot fork: $!" unless defined $pid;
+
+    if ($pid == 0) {
+        warn "*** process $$ starting" if DEBUG;
+        eval {
+            $self->accept_loop($app, $self->_calc_reqs_per_child());
+        };
+        warn $@ if $@;
+        warn "*** process $$ ending" if DEBUG;
+        exit 0;
+    } else {
+        $self->{processes}->{$pid} = 1;
+    }
+}
+
+sub _calc_reqs_per_child {
+    my $self = shift;
+    my $max = $self->{max_reqs_per_child};
+    if (my $min = $self->{min_reqs_per_child}) {
+        srand((rand() * 2 ** 30) ^ $$ ^ time);
+        return $max - int(($max - $min + 1) * rand);
+    } else {
+        return $max;
+    }
+}
+
 sub DESTROY {
     my ($self) = @_;
     while (my $f = shift @{$self->{_unlink}}) {
