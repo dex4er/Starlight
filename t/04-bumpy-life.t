@@ -10,7 +10,7 @@ use Test::More;
 use Test::TCP qw(empty_port);
 
 if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BROKEN}) {
-    plan skip_all => 'Perl with bug RT#119003 on Windows';
+    plan skip_all => 'Perl with bug RT#119003 on MSWin32';
     exit 0;
 }
 

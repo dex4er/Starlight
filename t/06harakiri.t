@@ -10,7 +10,7 @@ use Plack::Test;
 use Test::More;
 
 if ($^O eq 'MSWin32' and not $ENV{PERL_TEST_BROKEN}) {
-    plan skip_all => 'Perl with bug RT#40565 on Windows';
+    plan skip_all => 'Perl with bug RT#40565 on MSWin32';
     exit 0;
 }
 

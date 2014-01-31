@@ -12,7 +12,7 @@ use IO::Socket::UNIX;
 use Socket;
 
 if ($^O eq 'MSWin32') {
-    plan skip_all => 'UNIX socket tests on Windows';
+    plan skip_all => 'UNIX socket tests on MSWin32';
     exit 0;
 }
 
