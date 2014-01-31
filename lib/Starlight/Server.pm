@@ -8,6 +8,7 @@ our $VERSION = '0.0300';
 use Config;
 
 use Carp ();
+use English '-no_match_vars';
 use Errno ();
 use File::Spec;
 use Plack;
@@ -672,9 +673,9 @@ sub _set_uid {
     my $uid = $self->get_uid($user);
 
     eval { POSIX::setuid($uid) };
-    if ($< != $uid || $> != $uid) { # check $> also (rt #21262)
-        $< = $> = $uid; # try again - needed by some 5.8.0 linux systems (rt #13450)
-        if ($< != $uid) {
+    if ($UID != $uid || $EUID != $uid) { # check $> also (rt #21262)
+        $UID = $EUID = $uid; # try again - needed by some 5.8.0 linux systems (rt #13450)
+        if ($UID != $uid) {
             die "Couldn't become uid \"$uid\": $!\n";
         }
     }
@@ -690,7 +691,7 @@ sub _set_gid {
     eval { $) = $gids }; # store all the gids - this is really sort of optional
 
     eval { POSIX::setgid($gid) };
-    if (! grep {$gid == $_} split /\s+/, $() { # look for any valid id in the list
+    if (! grep {$gid == $_} split /\s+/, $GID) { # look for any valid id in the list
         die "Couldn't become gid \"$gid\": $!\n";
     }
 
