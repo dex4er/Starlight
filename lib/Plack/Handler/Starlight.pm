@@ -9,6 +9,7 @@ use base qw(Starlight::Server);
 
 use Carp ();
 use Config ();
+use English '-no_match_vars';
 use Fcntl ();
 use File::Spec;
 use POSIX ();
@@ -57,6 +58,21 @@ sub run {
 
     warn "*** starting main process $$" if DEBUG;
     $self->setup_listener();
+
+    if (defined $self->{group} and $self->_get_gid($self->{group}) ne $EGID) {
+        warn "*** setting group to \"$self->{group}\"" if DEBUG;
+        $self->_set_gid($self->{group});
+    }
+
+    if (defined $self->{user} and $self->_get_uid($self->{user}) ne $EUID) {
+        warn "*** setting user to \"$self->{user}\"" if DEBUG;
+        $self->_set_uid($self->{user});
+    }
+
+    if (defined $self->{umask}) {
+        warn "*** setting umask to \"$self->{umask}\"" if DEBUG;
+        umask(oct($self->{umask}));
+    }
 
     local $SIG{PIPE} = 'IGNORE';
 

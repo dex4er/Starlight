@@ -670,7 +670,7 @@ sub _get_gid {
 # Taken from Net::Server::Daemonize
 sub _set_uid {
     my ($self, $user) = @_;
-    my $uid = $self->get_uid($user);
+    my $uid = $self->_get_uid($user);
 
     eval { POSIX::setuid($uid) };
     if ($UID != $uid || $EUID != $uid) { # check $> also (rt #21262)
