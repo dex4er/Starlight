@@ -189,6 +189,60 @@ sub _daemonize {
     return;
 }
 
+sub _get_uid {
+    my ($self, $user) = @_;
+    my $uid  = ($user =~ /^(\d+)$/) ? $1 : getpwnam($user);
+    die "No such user \"$user\"\n" unless defined $uid;
+    return $uid;
+}
+
+sub _get_gid {
+    my ($self, @groups) = @_;
+    my @gid;
+
+    foreach my $group ( split( /[, ]+/, join(" ",@groups) ) ){
+        if( $group =~ /^\d+$/ ){
+            push @gid, $group;
+        }else{
+            my $id = getgrnam($group);
+            die "No such group \"$group\"\n" unless defined $id;
+            push @gid, $id;
+        }
+    }
+
+    die "No group found in arguments.\n" unless @gid;
+    return join(" ",$gid[0],@gid);
+}
+
+sub _set_uid {
+    my ($self, $user) = @_;
+    my $uid = $self->get_uid($user);
+
+    eval { POSIX::setuid($uid) };
+    if ($< != $uid || $> != $uid) { # check $> also (rt #21262)
+        $< = $> = $uid; # try again - needed by some 5.8.0 linux systems (rt #13450)
+        if ($< != $uid) {
+            die "Couldn't become uid \"$uid\": $!\n";
+        }
+    }
+
+    return 1;
+}
+
+sub _set_gid {
+    my ($self, @groups) = @_;
+    my $gids = $self->_get_gid(@groups);
+    my $gid  = (split /\s+/, $gids)[0];
+    eval { $) = $gids }; # store all the gids - this is really sort of optional
+
+    eval { POSIX::setgid($gid) };
+    if (! grep {$gid == $_} split /\s+/, $() { # look for any valid id in the list
+        die "Couldn't become gid \"$gid\": $!\n";
+    }
+
+    return 1;
+}
+
 sub _sleep {
     my ($self, $t) = @_;
     select undef, undef, undef, $t if $t;
