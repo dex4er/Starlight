@@ -640,6 +640,40 @@ sub _daemonize {
     return;
 }
 
+sub _setup_privileges {
+    my ($self) = @_;
+
+    if (defined $self->{group}) {
+        if (not $Config::Config{d_setegid}) {
+            die "group parameter is not supported on this platform ($^O)\n";
+        }
+        if ($self->_get_gid($self->{group}) ne $EGID) {
+            warn "*** setting group to \"$self->{group}\"" if DEBUG;
+            $self->_set_gid($self->{group});
+        }
+    }
+
+    if (defined $self->{user}) {
+        if (not $Config::Config{d_seteuid}) {
+            die "user parameter is not supported on this platform ($^O)\n";
+        }
+        if ($self->_get_uid($self->{user}) ne $EUID) {
+            warn "*** setting user to \"$self->{user}\"" if DEBUG;
+            $self->_set_uid($self->{user});
+        }
+    }
+
+    if (defined $self->{umask}) {
+        if (not $Config::Config{d_umask}) {
+            die "umask parameter is not supported on this platform ($^O)\n";
+        }
+        warn "*** setting umask to \"$self->{umask}\"" if DEBUG;
+        umask(oct($self->{umask}));
+    }
+
+    return;
+}
+
 # Taken from Net::Server::Daemonize
 sub _get_uid {
     my ($self, $user) = @_;

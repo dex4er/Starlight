@@ -59,20 +59,7 @@ sub run {
     warn "*** starting main process $$" if DEBUG;
     $self->setup_listener();
 
-    if (defined $self->{group} and $self->_get_gid($self->{group}) ne $EGID) {
-        warn "*** setting group to \"$self->{group}\"" if DEBUG;
-        $self->_set_gid($self->{group});
-    }
-
-    if (defined $self->{user} and $self->_get_uid($self->{user}) ne $EUID) {
-        warn "*** setting user to \"$self->{user}\"" if DEBUG;
-        $self->_set_uid($self->{user});
-    }
-
-    if (defined $self->{umask}) {
-        warn "*** setting umask to \"$self->{umask}\"" if DEBUG;
-        umask(oct($self->{umask}));
-    }
+    $self->_setup_privileges();
 
     local $SIG{PIPE} = 'IGNORE';
 
