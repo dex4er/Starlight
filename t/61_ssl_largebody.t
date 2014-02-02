@@ -22,6 +22,11 @@ if (not eval { require IO::Socket::SSL; }) {
     exit 0;
 }
 
+if (not eval { require Net::SSLeay; Net::SSLeay->VERSION(1.49); }) {
+    plan skip_all => 'Net::SSLeay >= 1.49 required';
+    exit 0;
+}
+
 my $ca_crt     = "$FindBin::Bin/../examples/ca.crt";
 my $server_crt = "$FindBin::Bin/../examples/localhost.crt";
 my $server_key = "$FindBin::Bin/../examples/localhost.key";

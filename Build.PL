@@ -26,7 +26,9 @@ my $build = Module::Build::My->new(
         $^O eq 'cygwin' ? ('Win32::Process' => 0) : (),
     },
     suggests                => {
+        'IO::Socket::IO'        => 0,
         'IO::Socket::SSL'       => 0,
+        'Net::SSLeay'           => '1.49',
     },
     build_requires          => {
         'HTTP::Tiny'            => 0,
