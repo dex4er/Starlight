@@ -27,6 +27,11 @@ if (not eval { require Net::SSLeay; Net::SSLeay->VERSION(1.49); }) {
     exit 0;
 }
 
+if (eval { require Acme::Override::INET; } ) {
+    plan skip_all => 'Acme::Override::INET is not supported';
+    exit 0;
+}
+
 my $ca_crt     = "$FindBin::Bin/../examples/ca.crt";
 my $server_crt = "$FindBin::Bin/../examples/localhost.crt";
 my $server_key = "$FindBin::Bin/../examples/localhost.key";
