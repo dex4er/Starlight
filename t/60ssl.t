@@ -17,6 +17,11 @@ if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BR
     exit 0;
 }
 
+if ($^O eq 'cygwin' and not $ENV{PERL_TEST_BROKEN}) {
+    plan skip_all => 'Broken on cygwin';
+    exit 0;
+}
+
 if (not eval { require IO::Socket::SSL; }) {
     plan skip_all => 'IO::Socket::SSL required';
     exit 0;
