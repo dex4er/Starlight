@@ -1,3 +1,7 @@
+0.0301  2014-05-03      Piotr Roszatycki <dexter@cpan.org>
+
+?
+
 0.0300  2014-02-07      Piotr Roszatycki <dexter@cpan.org>
 
 Support for "user", "group" and "umask" options.
