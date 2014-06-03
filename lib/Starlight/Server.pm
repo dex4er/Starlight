@@ -22,7 +22,8 @@ use Plack::TempBuffer;
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 
 use Try::Tiny;
-use Time::HiRes qw(time);
+
+BEGIN { try { require Time::HiRes; Time::HiRes->import(qw(time)) } }
 
 use constant DEBUG            => $ENV{PERL_STARLIGHT_DEBUG};
 use constant CHUNKSIZE        => 64 * 1024;
