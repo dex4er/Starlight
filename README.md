@@ -33,70 +33,70 @@ with some limitations.
 In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), starlight accepts
 following options(s).
 
-## \--max-workers
+## --max-workers
 
 Number of worker processes. (default: 10)
 
-## \--timeout
+## --timeout
 
 Seconds until timeout. (default: 300)
 
-## \--keepalive-timeout
+## --keepalive-timeout
 
 Timeout for persistent connections. (default: 2)
 
-## \--max-keepalive-reqs
+## --max-keepalive-reqs
 
 Max. number of requests allowed per single persistent connection. If set to
 one, persistent connections are disabled. (default: 1)
 
-## \--max-reqs-per-child
+## --max-reqs-per-child
 
 Max. number of requests to be handled before a worker process exits. (default:
 1000)
 
-## \--min-reqs-per-child
+## --min-reqs-per-child
 
 If set, randomizes the number of requests handled by a single worker process
 between the value and that supplied by `--max-reqs-per-chlid`.
 (default: none)
 
-## \--spawn-interval
+## --spawn-interval
 
 If set, worker processes will not be spawned more than once than every given
 seconds.  Also, when SIGHUP is being received, no more than one worker
 processes will be collected every given seconds. This feature is useful for
 doing a "slow-restart". (default: none)
 
-## \--main-process-delay
+## --main-process-delay
 
 The Starlight does not synchronize its processes and it requires a small delay
 in main process so it doesn't consume all CPU. (default: 0.1)
 
-## \--ssl
+## --ssl
 
 Enables SSL support. The [IO::Socket::SSL](https://metacpan.org/pod/IO::Socket::SSL) module is required. (default: 0)
 
-## \--ssl-key-file
+## --ssl-key-file
 
 Specifies the path to SSL key file. (default: none)
 
-## \--ssl-cert-file
+## --ssl-cert-file
 
 Specifies the path to SSL certificate file. (default: none)
 
-## \--ipv6
+## --ipv6
 
 Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO::Socket::IP) module is required. (default: 0)
 
-## \--socket
+## --socket
 
 Enables UNIX socket support. The [IO::Socket::UNIX](https://metacpan.org/pod/IO::Socket::UNIX) module is required. The
 socket file have to be not yet created. The first character `@` or `\0` in
 the socket file name means that abstract socket address will be created.
 (default: none)
 
-## \--user
+## --user
 
 Changes the user id or user name that the server process should switch to
 after binding to the port. The pid file, error log or unix socket also are
@@ -104,30 +104,30 @@ created before changing privileges. This options is usually used if main
 process is started with root privileges beacause binding to the low-numbered
 (<1024) port. (default: none)
 
-## \--group
+## --group
 
 Changes the group ids or group names that the server should switch to after
 binding to the port. The ids or names can be separated with comma or space
 character. (default: none)
 
-## \--umask
+## --umask
 
 Changes file mode creation mask. The ["umask" in perlfunc](https://metacpan.org/pod/perlfunc#umask) is an octal number
 representing disabled permissions bits for newly created files. It is usually
 `022` when group shouldn't have permission to write or `002` when group
 should have permission to write. (default: none)
 
-## \--daemonize
+## --daemonize
 
 Makes the process run in the background. It doesn't work (yet) in native
 Windows (MSWin32). (default: 0)
 
-## \--pid
+## --pid
 
 Specify the pid file path. Use it with `-D|--daemonize` option.
 (default: none)
 
-## \--error-log
+## --error-log
 
 Specify the pathname of a file where the error log should be written. This
 enables you to still have access to the errors when using `--daemonize`.
