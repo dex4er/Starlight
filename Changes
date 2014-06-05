@@ -1,6 +1,6 @@
 0.0301  2014-05-03      Piotr Roszatycki <dexter@cpan.org>
 
-Requirement of Time::HiRes is optional.
+Requirement for Time::HiRes is optional.
 
 0.0300  2014-02-07      Piotr Roszatycki <dexter@cpan.org>
 
