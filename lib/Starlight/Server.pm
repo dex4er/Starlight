@@ -459,7 +459,7 @@ sub _handle_response {
     push @lines, "\015\012";
 
     if (defined $body && ref $body eq 'ARRAY' && @$body == 1
-            && length $body->[0] < 8192) {
+            && defined $body->[0] && length $body->[0] < 8192) {
         # combine response header and small request body
         my $buf = $body->[0];
         if ($use_chunked ) {
