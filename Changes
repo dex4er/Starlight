@@ -1,3 +1,7 @@
+0.0303  2014-05-08      Piotr Roszatycki <dexter@cpan.org>
+
+?
+
 0.0302  2014-05-06      Piotr Roszatycki <dexter@cpan.org>
 
 Bugfix for streaming mode (Use of uninitialized value).
