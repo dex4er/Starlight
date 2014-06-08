@@ -40,6 +40,7 @@ test_tcp(
         my $port = shift;
         my $loader = Plack::Loader->load(
             'Starlight',
+            quiet => 1,
             port => $port,
             max_workers => 5,
         );
@@ -54,4 +55,3 @@ test_tcp(
 );
 
 done_testing;
-

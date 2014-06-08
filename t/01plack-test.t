@@ -30,6 +30,6 @@ push @Plack::Test::Suite::TEST,
         },
     ];
 
-Plack::Test::Suite->run_server_tests('Starlight');
-done_testing();
+Plack::Test::Suite->run_server_tests('Starlight', undef, undef, quiet => 1);
 
+done_testing();

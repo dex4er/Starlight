@@ -21,6 +21,7 @@ if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
 
 $Plack::Test::Impl = 'Server';
 $ENV{PLACK_SERVER} = 'Starlight';
+$ENV{PLACK_QUIET} = 1;
 
 test_psgi
     app => sub {

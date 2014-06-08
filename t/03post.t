@@ -30,7 +30,7 @@ test_tcp(
         my $port = shift;
         my $runner = Plack::Runner->new;
         $runner->parse_options(
-            qw(--server Starlight --max-workers 0 --port), $port,
+            qw(--server Starlight --env test --quiet --max-workers 0 --port), $port,
         );
         $runner->run(
             sub {

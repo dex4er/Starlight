@@ -29,6 +29,7 @@ if ( $pid == 0 ) {
     # server
     my $loader = Plack::Loader->load(
         'Starlight',
+        quiet => 1,
         max_workers => 5,
         socket => $filename,
     );
@@ -59,4 +60,3 @@ done_testing();
 kill 'TERM',$pid;
 waitpid($pid,0);
 unlink($filename);
-

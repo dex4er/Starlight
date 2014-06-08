@@ -62,6 +62,7 @@ test_tcp(
     server => sub {
         my $port = shift;
         Starlight::Server->new(
+            quiet         => 1,
             host          => 'localhost',
             port          => $port,
             ssl           => 1,

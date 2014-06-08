@@ -61,7 +61,7 @@ sub new {
         daemonize            => $args{daemonize},
         pid                  => $args{pid},
         error_log            => $args{error_log},
-        quiet                => $args{quiet} || $args{q},
+        quiet                => $args{quiet} || $args{q} || $ENV{PLACK_QUIET},
         min_reqs_per_child   => (
             defined $args{min_reqs_per_child}
                 ? $args{min_reqs_per_child} : undef,

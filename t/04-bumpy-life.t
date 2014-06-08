@@ -23,6 +23,7 @@ my $thrall = Plack::Loader->load(
     'Starlight',
     min_reqs_per_child => 5,
     max_reqs_per_child => 10,
+    quiet => 1,
 );
 
 sleep 1;
