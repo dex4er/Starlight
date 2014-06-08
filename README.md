@@ -133,6 +133,10 @@ Specify the pathname of a file where the error log should be written. This
 enables you to still have access to the errors when using `--daemonize`.
 (default: none)
 
+## -q, --quiet
+
+Suppress the message about starting a server.
+
 # SEE ALSO
 
 [Starlight](https://metacpan.org/pod/Starlight),

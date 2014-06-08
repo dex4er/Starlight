@@ -7,7 +7,6 @@ our $VERSION = '0.0303';
 
 use base qw(Starlight::Server);
 
-use Carp ();
 use Config ();
 use English '-no_match_vars';
 use Fcntl ();

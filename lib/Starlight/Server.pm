@@ -7,7 +7,6 @@ our $VERSION = '0.0303';
 
 use Config;
 
-use Carp ();
 use English '-no_match_vars';
 use Errno ();
 use File::Spec;
@@ -62,6 +61,7 @@ sub new {
         daemonize            => $args{daemonize},
         pid                  => $args{pid},
         error_log            => $args{error_log},
+        quiet                => $args{quiet} || $args{q},
         min_reqs_per_child   => (
             defined $args{min_reqs_per_child}
                 ? $args{min_reqs_per_child} : undef,
@@ -92,9 +92,9 @@ sub new {
     };
 
     if ($args{max_workers} && $args{max_workers} > 1) {
-        Carp::carp(
+        die(
             "Forking in $class is deprecated. Falling back to the single process mode. ",
-            "If you need more workers, use Starman, Starlet or Starlight instead and run like `plackup -s Starlight`",
+            "If you need more workers, use Starman, Starlet or Starlight instead and run like `plackup -s Starlight`\n",
         );
     }
 
@@ -110,28 +110,28 @@ sub run {
 sub prepare_socket_class {
     my($self, $args) = @_;
 
-    if ($self->{socket} and ($self->{ssl} or $self->{ipv6})) {
-        Carp::croak("UNIX socket and either SSL or IPv6 are not supported at the same time. Choose one.");
+    if ($self->{socket} and ($self->{port} or $self->{ipv6})) {
+        die "UNIX socket and ether IPv4 or IPv6 are not supported at the same time.\n";
     }
 
-    if ($self->{ssl} and $self->{ipv6}) {
-        Carp::croak("SSL and IPv6 are not supported at the same time (yet). Choose one.");
+    if ($self->{ssl} and ($self->{socket} or $self->{ipv6})) {
+        die "SSL and either UNIX socket or IPv6 are not supported at the same time.\n";
     }
 
     if ($self->{socket}) {
         try { require IO::Socket::UNIX; 1 }
-            or Carp::croak("UNIX socket suport requires IO::Socket::UNIX");
+            or die "UNIX socket suport requires IO::Socket::UNIX\n";
         $args->{Local} =~ s/^@/\0/; # abstract socket address
         return "IO::Socket::UNIX";
     } elsif ($self->{ssl}) {
         try { require IO::Socket::SSL; 1 }
-            or Carp::croak("SSL suport requires IO::Socket::SSL");
+            or die "SSL suport requires IO::Socket::SSL\n";
         $args->{SSL_key_file}  = $self->{ssl_key_file};
         $args->{SSL_cert_file} = $self->{ssl_cert_file};
         return "IO::Socket::SSL";
     } elsif ($self->{ipv6}) {
         try { require IO::Socket::IP; 1 }
-            or Carp::croak("IPv6 support requires IO::Socket::IP");
+            or die "IPv6 support requires IO::Socket::IP\n";
         $self->{host}      ||= '::';
         $args->{LocalAddr} ||= '::';
         return "IO::Socket::IP";
@@ -154,10 +154,15 @@ sub setup_listener {
         ReuseAddr => 1,
     );
 
+    my $proto = $self->{ssl} ? 'https' : 'http';
+    my $listening = $self->{socket} ? "socket $self->{socket}" : "port $self->{port}";
+
     my $class = $self->prepare_socket_class(\%args);
     $self->{listen_sock} ||= $class->new(%args)
-        or die sprintf "failed to listen to %s: $!", $self->{socket}
-            ? "socket $self->{socket}" : "port $self->{port}";
+        or die "failed to listen to $listening: $!\n";
+
+    print STDERR "Starting $self->{server_software} $proto server listening at $listening\n"
+        unless $self->{quiet};
 
     my $family = Socket::sockaddr_family(getsockname($self->{listen_sock}));
     $self->{_listen_sock_is_unix} = $family == AF_UNIX;
@@ -173,7 +178,7 @@ sub setup_listener {
         $self->_add_to_unlink(File::Spec->rel2abs($args{Local}));
     }
 
-    $self->{server_ready}->({ %$self, proto => $self->{ssl} ? 'https' : 'http' });
+    $self->{server_ready}->({ %$self, proto => $proto });
 }
 
 sub accept_loop {
@@ -200,11 +205,11 @@ sub accept_loop {
         if (my ($conn,$peer) = $self->{listen_sock}->accept) {
             $self->{_is_deferred_accept} = $self->{_using_defer_accept};
             $conn->blocking(0)
-                or die "failed to set socket to nonblocking mode:$!";
+                or die "failed to set socket to nonblocking mode:$!\n";
             my ($peerport, $peerhost, $peeraddr) = (0, undef, undef);
             if ($self->{_listen_sock_is_tcp}) {
                 $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
-                    or die "setsockopt(TCP_NODELAY) failed:$!";
+                    or die "setsockopt(TCP_NODELAY) failed:$!\n";
                 local $@;
                 if (HAS_INET6 && Socket::sockaddr_family(getsockname($conn)) == AF_INET6) {
                     ($peerport, $peerhost) = Socket::unpack_sockaddr_in6($peer);
@@ -388,7 +393,7 @@ sub handle_connection {
             $self->_handle_response($env->{SERVER_PROTOCOL}, $_[0], $conn, \$use_keepalive);
         });
     } else {
-        die "Bad response $res";
+        die "Bad response $res\n";
     }
     if ($self->{term_received}) {
         exit 0;
