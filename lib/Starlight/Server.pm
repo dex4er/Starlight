@@ -618,13 +618,18 @@ sub _daemonize {
 
         chdir File::Spec->rootdir              or die "Cannot chdir to root directory: $!\n";
 
-        open STDIN,  '<', File::Spec->devnull  or die "Cannot open null device for reading: $!\n";
-        open STDOUT, '>', File::Spec->devnull  or die "Cannot open null device for writing: $!\n";
+        open my $devnull,  '+>', File::Spec->devnull or die "Cannot open null device: $!\n";
+
+        open STDIN, '>&', $devnull             or die "Cannot dup null device: $!\n";
+        open STDOUT, '>&', $devnull            or die "Cannot dup null device: $!\n";
 
         defined(my $pid = fork)                or die "Cannot fork: $!\n";
-        if ($self->{pid} and $pid) {
-            print $pidfh "$pid\n"              or die "Cannot write pidfile $self->{pid}: $!\n";
-            close $pidfh;
+        if ($pid) {
+            if ($self->{pid} and $pid) {
+                print $pidfh "$pid\n"          or die "Cannot write pidfile $self->{pid}: $!\n";
+                close $pidfh;
+                open STDERR, '>&', $devnull    or die "Cannot dup null device: $!\n";
+            }
             exit;
         }
 
@@ -635,7 +640,7 @@ sub _daemonize {
         }
 
         if (not defined $self->{error_log}) {
-            open STDERR, '>&', \*STDOUT        or die "Cannot dup null device for writing: $!\n";
+            open STDERR, '>&', $devnull        or die "Cannot dup null device: $!\n";
         }
     }
 
