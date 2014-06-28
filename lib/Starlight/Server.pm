@@ -413,6 +413,7 @@ sub _handle_response {
     for (my $i = 0; $i < @$headers; $i += 2) {
         my $k = $headers->[$i];
         my $v = $headers->[$i + 1];
+        $v = '' if not defined $v;
         my $lck = lc $k;
         if ($lck eq 'connection') {
             $$use_keepalive_r = undef
