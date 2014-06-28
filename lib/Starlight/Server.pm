@@ -460,7 +460,7 @@ sub _handle_response {
 
     }
 
-    unshift @lines, "HTTP/1.1 $status_code @{[ HTTP::Status::status_message($status_code) ]}\015\012";
+    unshift @lines, "HTTP/1.1 $status_code @{[ HTTP::Status::status_message($status_code) || 'Unknown' ]}\015\012";
     push @lines, "\015\012";
 
     if (defined $body && ref $body eq 'ARRAY' && @$body == 1
