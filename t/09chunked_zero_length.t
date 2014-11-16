@@ -5,6 +5,10 @@ use warnings;
 
 BEGIN { delete $ENV{http_proxy} };
 
+# workaround for HTTP::Tiny + Test::TCP
+BEGIN { $INC{'threads.pm'} = 0 };
+sub threads::tid { }
+
 use Test::TCP;
 use Plack::Test;
 use HTTP::Request;

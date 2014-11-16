@@ -94,7 +94,7 @@ sub new {
     if ($args{max_workers} && $args{max_workers} > 1) {
         die(
             "Forking in $class is deprecated. Falling back to the single process mode. ",
-            "If you need more workers, use Starman, Starlet or Starlight instead and run like `plackup -s Starlight`\n",
+            "If you need more workers, use Starlight instead and run like `plackup -s Starlight`\n",
         );
     }
 
