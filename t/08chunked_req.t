@@ -12,6 +12,7 @@ sub threads::tid { }
 use Test::TCP;
 use Plack::Test;
 use File::ShareDir;
+use File::Temp;
 use HTTP::Request;
 use Test::More;
 use Digest::MD5;
@@ -30,7 +31,10 @@ $Plack::Test::Impl = "Server";
 $ENV{PLACK_SERVER} = 'Starlight';
 $ENV{PLACK_QUIET} = 1;
 
-my $file = File::ShareDir::dist_dir('Plack') . "/baybridge.jpg";
+my ($fh, $filename) = File::Temp::tempfile(UNLINK=>1);
+ok $fh;
+print $fh 'A' x 100_000;
+close $fh;
 
 my $app = sub {
     my $env = shift;
@@ -48,7 +52,7 @@ test_psgi $app, sub {
     my $cb = shift;
     sleep 1;
 
-    open my $fh, "<:raw", $file;
+    open my $fh, "<:raw", $filename;
     local $/ = \1024;
 
     my $req = HTTP::Request->new(POST => "http://localhost/");
@@ -56,8 +60,8 @@ test_psgi $app, sub {
 
     my $res = $cb->($req);
 
-    is $res->header('X-Content-Length'), 79838;
-    is Digest::MD5::md5_hex($res->content), '983726ae0e4ce5081bef5fb2b7216950';
+    is $res->header('X-Content-Length'), 100_000;
+    is Digest::MD5::md5_hex($res->content), '5793f7e3037448b250ae716b43ece2c2';
 
     sleep 1;
 };
