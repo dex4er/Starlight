@@ -754,6 +754,7 @@ sub _create_process {
     if ($pid == 0) {
         warn "*** process $$ starting" if DEBUG;
         eval {
+            $SIG{CHLD} = 'DEFAULT';
             $self->accept_loop($app, $self->_calc_reqs_per_child());
         };
         warn $@ if $@;
