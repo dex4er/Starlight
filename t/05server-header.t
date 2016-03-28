@@ -29,12 +29,12 @@ test_tcp(
         my $port = shift;
         sleep 1;
         my $ua = HTTP::Tiny->new;
-        my $res = $ua->get("http://localhost:$port/");
+        my $res = $ua->get("http://127.0.0.1:$port/");
         ok( $res->{success} );
         like( scalar $res->{headers}{server}, qr/Starlight/ );
         unlike( scalar $res->{headers}{server}, qr/Hello/ );
 
-        $res = $ua->get("http://localhost:$port/?server=1");
+        $res = $ua->get("http://127.0.0.1:$port/?server=1");
         ok( $res->{success} );
         unlike( scalar $res->{headers}{server}, qr/Starlight/ );
         like( scalar $res->{headers}{server}, qr/Hello/ );

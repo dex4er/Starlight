@@ -30,7 +30,7 @@ test_tcp(
         my $port = shift;
         sleep 1;
         my $ua = HTTP::Tiny->new;
-        my $res = $ua->get("http://localhost:$port/");
+        my $res = $ua->get("http://127.0.0.1:$port/");
         ok $res->{success};
         like $res->{headers}{server}, qr/Starlight/;
         like $res->{content}, qr/Hello/;
@@ -40,7 +40,7 @@ test_tcp(
         my $port = shift;
         Starlight::Server->new(
             quiet    => 1,
-            host     => 'localhost',
+            host     => '127.0.0.1',
             port     => $port,
         )->run(
             sub { [ 200, [], ["Hello world\n"] ] },
