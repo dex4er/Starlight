@@ -3,7 +3,7 @@ package Starlight::Server;
 use strict;
 use warnings;
 
-our $VERSION = '0.0304';
+our $VERSION = '0.0305';
 
 use Config;
 
