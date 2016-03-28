@@ -11,7 +11,8 @@ $PERL Build.PL
 rm -f MANIFEST
 : > README.md
 if [ -f .travis.yml ]; then
-    grep 'Build Status' .travis.yml | sed 's/^# //; s/.$/&\n/' > README.md
+    grep 'Build Status' .travis.yml | sed 's/^# //; s/.$/&/' > README.md
+    echo >> README.md
 fi
 dist_version_from=`grep dist_version_from Build.PL | sed "s%.*=> '%%; s%',%%"`
 $PERL -MPod::Markdown -e '$p=Pod::Markdown->new;$p->parse_from_filehandle(\*STDIN);print $p->as_markdown' \
@@ -29,7 +30,9 @@ cd *-[0-9]*.[0-9]*
 $PERL Build.PL
 $PERL Build
 $PERL Build test
-$PERL -MApp::Prove -e '$a=App::Prove->new;$a->process_args(qw(-Iblib/lib xt));exit($a->run ? 0 : 1)'
+if [ -z "$TEST_SKIP_EXTRA" ] || [ "$TEST_SKIP_EXTRA" = 0 ]; then
+    $PERL -MApp::Prove -e '$a=App::Prove->new;$a->process_args(qw(-Iblib/lib xt));exit($a->run ? 0 : 1)'
+fi
 
 if [ "$1" = sign ]; then
     $PERL Build distsign

@@ -1,3 +1,7 @@
+0.0305  2016-03-28      Piotr Roszatycki <dexter@cpan.org>
+
+*
+
 0.0304  2015-08-02      Piotr Roszatycki <dexter@cpan.org>
 
 * Server resets SIGCHLD to default for workers so they work correctly with CGI
@@ -31,4 +35,3 @@
 0.0100  2014-01-25      Piotr Roszatycki <dexter@cpan.org>
 
 * Initial CPAN release.
-
