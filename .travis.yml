@@ -14,7 +14,6 @@ script: ./Dist.SH
 matrix:
   include:
   - perl: "5.22"
-    env: TEST_SKIP_EXTRA=0
   - perl: "5.20"
     env: TEST_SKIP_EXTRA=1
   - perl: "5.18"
