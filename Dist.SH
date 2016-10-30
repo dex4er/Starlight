@@ -11,12 +11,12 @@ $PERL Build.PL
 rm -f MANIFEST
 : > README.md
 if [ -f .travis.yml ]; then
-    grep 'Build Status' .travis.yml | sed 's/^# //; s/.$/&/' > README.md
+    grep 'Build Status' .travis.yml | $PERL -pe 's/^# //; s/.$/$&/' > README.md
     echo >> README.md
 fi
-dist_version_from=`grep dist_version_from Build.PL | sed "s%.*=> '%%; s%',%%"`
+dist_version_from=`grep dist_version_from Build.PL | $PERL -pe "s%.*=> '%%; s%',%%"`
 $PERL -MPod::Markdown -e '$p=Pod::Markdown->new;$p->parse_from_filehandle(\*STDIN);print $p->as_markdown' \
-    < ${dist_version_from:-lib/$(grep ^name: MYMETA.yml | sed 's/^name: //; s,-,/,g').pm} \
+    < ${dist_version_from:-lib/$(grep ^name: MYMETA.yml | $PERL -pe 's/^name: //; s,-,/,g').pm} \
     | $PERL -pe 'sub a { $_[0]=~tr/ /-/; $_[0] } s,[(]http://search.cpan.org/perldoc[?]([^#)]*)(#[^)]*)?[)],a("(http://metacpan.org/module/$1$2)"),eg' \
     >> README.md
 
