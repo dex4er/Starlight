@@ -208,8 +208,10 @@ sub accept_loop {
                 or die "failed to set socket to nonblocking mode:$!\n";
             my ($peerport, $peerhost, $peeraddr) = (0, undef, undef);
             if ($self->{_listen_sock_is_tcp}) {
-                $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
-                    or die "setsockopt(TCP_NODELAY) failed:$!\n";
+                if (try { TCP_NODELAY }) {
+                    $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
+                        or die "setsockopt(TCP_NODELAY) failed:$!\n";
+                }
                 local $@;
                 if (HAS_INET6 && Socket::sockaddr_family(getsockname($conn)) == AF_INET6) {
                     ($peerport, $peerhost) = Socket::unpack_sockaddr_in6($peer);

@@ -1,6 +1,6 @@
 0.0306  2016-10-30      Piotr Roszatycki <dexter@cpan.org>
 
-*
+* Workaround for missing TCP_NODELAY on Android.
 
 0.0305  2016-03-28      Piotr Roszatycki <dexter@cpan.org>
 
