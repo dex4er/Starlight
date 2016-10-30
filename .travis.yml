@@ -7,13 +7,15 @@ addons:
     packages:
     - aspell
 install:
-  - test -n "$TEST_SKIP_EXTRA" || cpanm --with-recommends --installdeps --notest --skip-satisfied git://github.com/dex4er/perl-DEXTER-Module-Skeleton
-  - cpanm --with-recommends --installdeps --notest --skip-satisfied .
-  - cpanm --force --uninstall IO::Socket::SSL || true
+  - cpanm --notest --skip-satisfied App::cpanmw
+  - test -n "$TEST_SKIP_EXTRA" || cpanmw --with-recommends --installdeps --notest --skip-satisfied git://github.com/dex4er/perl-DEXTER-Module-Skeleton
+  - cpanmw --with-recommends --installdeps --notest --skip-satisfied .
 script: ./Dist.SH
 matrix:
   include:
+  - perl: "5.24"
   - perl: "5.22"
+    env: TEST_SKIP_EXTRA=1
   - perl: "5.20"
     env: TEST_SKIP_EXTRA=1
   - perl: "5.18"
