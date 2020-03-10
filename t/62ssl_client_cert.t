@@ -42,10 +42,10 @@ if (eval { require Acme::Override::INET; } ) {
 }
 
 my $ca_crt     = "$FindBin::Bin/../examples/ca.crt";
+my $client_crt = "$FindBin::Bin/../examples/client.crt";
+my $client_key = "$FindBin::Bin/../examples/client.key";
 my $server_crt = "$FindBin::Bin/../examples/localhost.crt";
 my $server_key = "$FindBin::Bin/../examples/localhost.key";
-
-my $body       = 'x'x(32*1024); # > 16KB
 
 test_tcp(
     client => sub {
@@ -55,26 +55,30 @@ test_tcp(
             verify_SSL => 1,
             SSL_options => {
                 SSL_ca_file   => $ca_crt,
+                SSL_cert_file => $client_crt,
+                SSL_key_file  => $client_key,
+                SSL_use_cert  => 0,
            }
         );
         my $res = $ua->get("https://127.0.0.1:$port/");
         ok $res->{success};
         like $res->{headers}{server}, qr/Starlight/;
-        like $res->{content}, qr/xxxxxxxxxx/;
-        is length $res->{content}, length $body;
+        is $res->{content}, 'https';
         sleep 1;
     },
     server => sub {
         my $port = shift;
         Starlight::Server->new(
-            quiet         => 1,
-            host          => '127.0.0.1',
-            port          => $port,
-            ssl           => 1,
-            ssl_key_file  => $server_key,
-            ssl_cert_file => $server_crt,
+            quiet              => 1,
+            host               => '127.0.0.1',
+            port               => $port,
+            ssl                => 1,
+            ssl_key_file       => $server_key,
+            ssl_cert_file      => $server_crt,
+            ssl_ca_file        => $ca_crt,
+            ssl_verify_mode    => IO::Socket::SSL->SSL_VERIFY_PEER,
         )->run(
-            sub { [ 200, [], [$body] ] },
+            sub { [ 200, [], [$_[0]->{'psgi.url_scheme'}] ] },
         );
     }
 );

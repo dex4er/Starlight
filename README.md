@@ -23,7 +23,7 @@ package.
 
 Starlight was started as a fork of [Thrall](https://metacpan.org/pod/Thrall) server which is a fork of
 [Starlet](https://metacpan.org/pod/Starlet) server. It has almost the same code as [Thrall](https://metacpan.org/pod/Thrall) and [Starlet](https://metacpan.org/pod/Starlet) and
-it was adapted to doesn't use any other modules than [Plack](https://metacpan.org/pod/Plack).
+it was adapted to not use any other modules than [Plack](https://metacpan.org/pod/Plack).
 
 Starlight is created for Unix-like systems but it should also work on Windows
 with some limitations.
@@ -84,6 +84,16 @@ Specifies the path to SSL key file. (default: none)
 ## --ssl-cert-file
 
 Specifies the path to SSL certificate file. (default: none)
+
+## --ssl-ca-file
+
+Specifies the path to SSL CA certificate file used when verification mode is
+enabled. (default: none)
+
+## --ssl-verify-mode
+
+Sets the verification mode for the peer certificate. See
+["SSL\_verify\_mode" in IO::Socket::SSL](https://metacpan.org/pod/IO%3A%3ASocket%3A%3ASSL#SSL_verify_mode). (default: 0)
 
 ## --ipv6
 
@@ -226,7 +236,7 @@ Paul Seamons <paul@seamons.com>
 
 # LICENSE
 
-Copyright (c) 2013-2016 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2013-2016, 2020 Piotr Roszatycki <dexter@cpan.org>.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.

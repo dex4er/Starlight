@@ -53,8 +53,6 @@ test_tcp(
             verify_SSL => 1,
             SSL_options => {
                 SSL_ca_file   => $ca_crt,
-                SSL_cert_file => $server_crt,
-                SSL_key_file  => $server_key,
            }
         );
         my $res = $ua->get("https://127.0.0.1:$port/");
