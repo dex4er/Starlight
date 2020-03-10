@@ -13,10 +13,11 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get install -qq spell
+  - sudo apt-get install -qq libssl-dev spell zlib1g-dev
   - perlbrew install --notest --noman $PERL_VERSION || true
   - perlbrew use $PERL_VERSION
   - cpanm --with-recommends --installdeps --notest --skip-satisfied .
+  - cpanm --notest --skip-satisfied IO::Socket::IP IO::Socket::SSL
   - if [ "$DIST_SH" = yes ]; then cpanm --with-recommends --installdeps --notest --skip-satisfied git://github.com/dex4er/perl-DEXTER-Module-Skeleton; fi
 
 script:
