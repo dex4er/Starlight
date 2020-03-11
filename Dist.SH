@@ -12,13 +12,13 @@ rm -f MANIFEST
 
 podfile=$(grep dist_version_from Build.PL | perl -pe "s%.*=> '%%; s%',%%")
 
-perl -MPod::Readme -CS -e 'Pod::Readme->new->parse_from_filehandle' \
+$PERL -MPod::Readme -CS -e 'Pod::Readme->new->parse_from_filehandle' \
     < $podfile \
     > README
 
 : > README.md
 if [ -f .travis.yml ]; then
-    grep 'Build Status' .travis.yml | sed 's/^# //; s/.$/&\n/' > README.md
+    grep 'Build Status' .travis.yml | $PERL -pe 's/^# //; s/.$/$&\n/' > README.md
 fi
 $PERL -MPod::Markdown -CS -e '$p=Pod::Markdown->new;$p->parse_from_filehandle(\*STDIN);print $p->as_markdown' \
     < $podfile \

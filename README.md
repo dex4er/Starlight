@@ -75,7 +75,7 @@ in main process so it doesn't consume all CPU. (default: 0.1)
 
 ## --ssl
 
-Enables SSL support. The [IO::Socket::SSL](https://metacpan.org/pod/IO%3A%3ASocket%3A%3ASSL) module is required. (default: 0)
+Enables SSL support. The [IO::Socket::SSL](https://metacpan.org/pod/IO::Socket::SSL) module is required. (default: 0)
 
 ## --ssl-key-file
 
@@ -93,15 +93,15 @@ enabled. (default: none)
 ## --ssl-verify-mode
 
 Sets the verification mode for the peer certificate. See
-["SSL\_verify\_mode" in IO::Socket::SSL](https://metacpan.org/pod/IO%3A%3ASocket%3A%3ASSL#SSL_verify_mode). (default: 0)
+["SSL\_verify\_mode" in IO::Socket::SSL](https://metacpan.org/pod/IO::Socket::SSL#SSL_verify_mode). (default: 0)
 
 ## --ipv6
 
-Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AIP) module is required. (default: 0)
+Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO::Socket::IP) module is required. (default: 0)
 
 ## --socket
 
-Enables UNIX socket support. The [IO::Socket::UNIX](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AUNIX) module is required. The
+Enables UNIX socket support. The [IO::Socket::UNIX](https://metacpan.org/pod/IO::Socket::UNIX) module is required. The
 socket file have to be not yet created. The first character `@` or `\0` in
 the socket file name means that abstract socket address will be created.
 (default: none)
@@ -164,7 +164,7 @@ It might be better option to use on this system the server with explicit
 [threads](https://metacpan.org/pod/threads) implementation, i.e. [Thrall](https://metacpan.org/pod/Thrall).
 
 For Cygwin the `perl-libwin32` package is highly recommended, because of
-[Win32::Process](https://metacpan.org/pod/Win32%3A%3AProcess) module which helps to terminate stalled worker processes.
+[Win32::Process](https://metacpan.org/pod/Win32::Process) module which helps to terminate stalled worker processes.
 
 # BUGS
 
