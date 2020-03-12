@@ -1,4 +1,4 @@
-0.0400  2020-03-10      Piotr Roszatycki <dexter@cpan.org>
+0.0400  2020-03-12      Piotr Roszatycki <dexter@cpan.org>
 
 * New options `--ssl-ca-file` and `--ssl-verify-mode`.
 
