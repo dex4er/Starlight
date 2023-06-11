@@ -35,7 +35,7 @@ close $fh;
 test_tcp(
     client => sub {
         my $port = shift;
-        sleep 1;
+        sleep 2;
 
         my $status = open my $fh, '<:raw', $filename;
         ok $status, 'open';
@@ -66,16 +66,18 @@ test_tcp(
             sub {
                 my $env = shift;
                 my $body;
-                my $clen = $env->{CONTENT_LENGTH};
-                while ($clen > 0) {
-                    $env->{'psgi.input'}->read(my $buf, $clen) or last;
-                    $clen -= length $buf;
-                    $body .= $buf;
-                }
+                eval {
+                    my $clen = $env->{CONTENT_LENGTH};
+                    while ($clen > 0) {
+                        $env->{'psgi.input'}->read(my $buf, $clen) or last;
+                        $clen -= length $buf;
+                        $body .= $buf;
+                    }
+                    1;
+                } or $body = $@;
                 return [200, ['Content-Type', 'text/plain', 'X-Content-Length', $env->{CONTENT_LENGTH}], [$body]];
             }
         );
-        exit;
     },
 );
 
