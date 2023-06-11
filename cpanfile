@@ -18,7 +18,10 @@ on test => sub {
     requires 'HTTP::Tiny';
     requires 'Test::More', '0.88';
     requires 'Test::TCP',  '0.15';
-    suggests 'Mojolicious';
+};
+
+feature examples => sub {
+    recommends 'Mojolicious';
 };
 
 on develop => sub {
