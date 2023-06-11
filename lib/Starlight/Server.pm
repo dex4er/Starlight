@@ -63,9 +63,9 @@ use constant MAX_REQUEST_SIZE => 131072;
 
 use constant HAS_INET6 => eval { AF_INET6 && socket my $ipv6_socket, AF_INET6, SOCK_DGRAM, 0 } && 1;
 
-use constant EINTR       => exists &Errno::EINTR       ? Errno::EINTR       : -1;
-use constant EAGAIN      => exists &Errno::EAGAIN      ? Errno::EAGAIN      : -1;
-use constant EWOULDBLOCK => exists &Errno::EWOULDBLOCK ? Errno::EWOULDBLOCK : -1;
+use constant EINTR       => exists &Errno::EINTR       ? &Errno::EINTR       : -1;    ## no critic
+use constant EAGAIN      => exists &Errno::EAGAIN      ? &Errno::EAGAIN      : -1;    ## no critic
+use constant EWOULDBLOCK => exists &Errno::EWOULDBLOCK ? &Errno::EWOULDBLOCK : -1;    ## no critic
 
 ## no critic(InputOutput::RequireBriefOpen InputOutput::RequireCheckedOpen)
 my $null_io = do { open my $io, "<", \""; $io };

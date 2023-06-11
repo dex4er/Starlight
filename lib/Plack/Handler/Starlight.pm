@@ -90,7 +90,7 @@ sub run {
         my ($sig) = @_;
         warn "*** SIG$sig received in process $$" if DEBUG;
         local ($!, $?);
-        my $pid = waitpid(-1, POSIX::WNOHANG);
+        my $pid = waitpid(-1, &POSIX::WNOHANG);    ## no critic
         return if $pid == -1;
         delete $self->{processes}->{$pid};
     };

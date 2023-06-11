@@ -1,7 +1,7 @@
 # local defaults for perlcritic
 theme = community
 severity = 3
-verbose = 4
+verbose  = [%s %p] %m at %f:%l:%c, near '%r'\n
 
 [-BuiltinFunctions::ProhibitSleepViaSelect]
 
