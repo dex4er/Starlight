@@ -50,6 +50,7 @@ test_tcp(
         is $res->{reason},                        'OK',                               'reason';
         is $res->{headers}{'x-content-length'},   100_000,                            'length';
         is Digest::MD5::md5_hex($res->{content}), '5793f7e3037448b250ae716b43ece2c2', 'content';
+        like $res->{content}, qr/^A{25000}A{25000}A{25000}A{25000}$/, 'content';
 
         sleep 1;
     },
