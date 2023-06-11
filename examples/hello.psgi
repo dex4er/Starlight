@@ -2,6 +2,9 @@
 
 # Simple PSGI application
 
+use strict;
+use warnings;
+
 my $app = do 'mojo.pl';
 
 use Plack::Builder;

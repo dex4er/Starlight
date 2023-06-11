@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-BEGIN { delete $ENV{http_proxy} };
+BEGIN { delete $ENV{http_proxy} }
 
 use Test::More;
 use Plack::Loader;
@@ -21,42 +21,45 @@ if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
     exit 0;
 }
 
-my ($fh, $filename) = File::Temp::tempfile(UNLINK=>1);
+my ($fh, $filename) = File::Temp::tempfile(UNLINK => 1);
 unlink($filename);
 
 my $pid = fork;
-if ( $pid == 0 ) {
+if ($pid == 0) {
+
     # server
     my $loader = Plack::Loader->load(
         'Starlight',
-        quiet => 1,
+        quiet       => 1,
         max_workers => 5,
-        socket => $filename,
+        socket      => $filename,
     );
-    $loader->run(sub{
-        my $env = shift;
-        my $remote = $env->{REMOTE_ADDR} || 'UNIX';
-        [200, ['Content-Type'=>'text/html'], ["HELLO $remote"]];
-    });
+    $loader->run(
+        sub {
+            my $env    = shift;
+            my $remote = $env->{REMOTE_ADDR} || 'UNIX';
+            [200, ['Content-Type' => 'text/html'], ["HELLO $remote"]];
+        }
+    );
     exit;
 }
 
 sleep 1;
 
 my $client = IO::Socket::UNIX->new(
-    Peer  => $filename,
+    Peer    => $filename,
     timeout => 3,
 ) or die "failed to listen to socket $filename:$!";
 
 $client->syswrite("GET / HTTP/1.0\015\012\015\012");
 $client->sysread(my $buf, 1024);
-like $buf, qr/Starlight/;
-like $buf, qr/HELLO UNIX/;
+like $buf, qr/Starlight/,  '$buf';
+like $buf, qr/HELLO UNIX/, '$buf';
 
 sleep 1;
 
 done_testing();
 
-kill 'TERM',$pid;
-waitpid($pid,0);
+kill 'TERM', $pid;
+waitpid($pid, 0);
 unlink($filename);

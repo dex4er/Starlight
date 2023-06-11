@@ -6,14 +6,18 @@ starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
 
 =head1 SYNOPSIS
 
-  $ starlight --workers=20 --max-reqs-per-child=100 app.psgi
+=for markdown ```console
 
-  $ starlight --port=80 --ipv6=1 app.psgi
+    $ starlight --max-workers=20 --max-reqs-per-child=100 app.psgi
 
-  $ starlight --port=443 --ssl=1 --ssl-key-file=file.key
-              --ssl-cert-file=file.crt app.psgi
+    $ starlight --port=80 --ipv6=1 app.psgi
 
-  $ starlight --socket=/tmp/starlight.sock app.psgi
+    $ starlight --port=443 --ssl=1 --ssl-key-file=file.key
+                --ssl-cert-file=file.crt app.psgi
+
+    $ starlight --socket=/tmp/starlight.sock app.psgi
+
+=for markdown ```
 
 =head1 DESCRIPTION
 
@@ -31,7 +35,6 @@ with some limitations.
 =for readme stop
 
 =cut
-
 
 use 5.008_001;
 
@@ -54,7 +57,6 @@ my $runner = Plack::Runner->new(
 );
 $runner->parse_options(@ARGV);
 $runner->run;
-
 
 =head1 OPTIONS
 
@@ -205,12 +207,20 @@ systems (MSWin32). Cygwin version seems to be correct.
 
 Some requests can fail with message:
 
-  failed to set socket to nonblocking mode:An operation was attempted on
-  something that is not a socket.
+=over
+
+failed to set socket to nonblocking mode:An operation was attempted on
+something that is not a socket.
+
+=back
 
 or
 
-  Bad file descriptor at (eval 24) line 4.
+=over
+
+Bad file descriptor at (eval 24) line 4.
+
+=back
 
 This problem was introduced in Perl 5.16 and fixed in Perl 5.19.5.
 
@@ -220,8 +230,12 @@ issue.
 
 The server fails when worker process calls L<perlfunc/exit> function:
 
-  Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
-  0x22dcc0c at lib/Plack/Handler/Starlight.pm line 140.
+=over
+
+Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
+0x22dcc0c at lib/Plack/Handler/Starlight.pm line 140.
+
+=back
 
 It means that Harakiri mode can't work and the server have to be started with
 C<--max-reqs-per-child=inf> option.
@@ -266,7 +280,7 @@ Paul Seamons <paul@seamons.com>
 
 =head1 LICENSE
 
-Copyright (c) 2013-2016, 2020 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2013-2016, 2020, 2023 Piotr Roszatycki <dexter@cpan.org>.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.

@@ -3,10 +3,10 @@
 use strict;
 use warnings;
 
-BEGIN { delete $ENV{http_proxy} };
+BEGIN { delete $ENV{http_proxy} }
 
 # workaround for HTTP::Tiny + Test::TCP
-BEGIN { $INC{'threads.pm'} = 0 };
+BEGIN { $INC{'threads.pm'} = 0 }
 sub threads::tid { }
 
 use HTTP::Tiny;
@@ -36,7 +36,7 @@ if (not eval { require Net::SSLeay; Net::SSLeay->VERSION(1.49); }) {
     exit 0;
 }
 
-if (eval { require Acme::Override::INET; } ) {
+if (eval { require Acme::Override::INET; }) {
     plan skip_all => 'Acme::Override::INET is not supported';
     exit 0;
 }
@@ -50,15 +50,17 @@ test_tcp(
         my $port = shift;
         sleep 1;
         my $ua = HTTP::Tiny->new(
-            verify_SSL => 1,
+            verify_SSL  => 1,
             SSL_options => {
-                SSL_ca_file   => $ca_crt,
-           }
+                SSL_ca_file => $ca_crt,
+            }
         );
         my $res = $ua->get("https://127.0.0.1:$port/");
-        ok $res->{success};
-        like $res->{headers}{server}, qr/Starlight/;
-        is $res->{content}, 'https';
+        ok $res->{success}, 'success';
+        is $res->{status}, '200', 'status';
+        is $res->{reason}, 'OK',  'reason';
+        like $res->{headers}{server}, qr/Starlight/, 'server in headers';
+        is $res->{content}, 'https', 'content';
         sleep 1;
     },
     server => sub {
@@ -71,7 +73,7 @@ test_tcp(
             ssl_key_file  => $server_key,
             ssl_cert_file => $server_crt,
         )->run(
-            sub { [ 200, [], [$_[0]->{'psgi.url_scheme'}] ] },
+            sub { [200, [], [$_[0]->{'psgi.url_scheme'}]] },
         );
     }
 );

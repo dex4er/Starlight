@@ -3,10 +3,10 @@
 use strict;
 use warnings;
 
-BEGIN { delete $ENV{http_proxy} };
+BEGIN { delete $ENV{http_proxy} }
 
 # workaround for HTTP::Tiny + Test::TCP
-BEGIN { $INC{'threads.pm'} = 0 };
+BEGIN { $INC{'threads.pm'} = 0 }
 sub threads::tid { }
 
 use Plack::Loader;
@@ -27,7 +27,7 @@ my $thrall = Plack::Loader->load(
     'Starlight',
     min_reqs_per_child => 5,
     max_reqs_per_child => 10,
-    quiet => 1,
+    quiet              => 1,
 );
 
 sleep 1;
@@ -41,7 +41,7 @@ for (my $i = 0; $i < 10000; $i++) {
         if $n > $max;
 }
 
-is $min, 5, "min";
+is $min, 5,  "min";
 is $max, 10, "max";
 
 done_testing;

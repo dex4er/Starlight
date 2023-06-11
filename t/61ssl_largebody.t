@@ -3,10 +3,10 @@
 use strict;
 use warnings;
 
-BEGIN { delete $ENV{http_proxy} };
+BEGIN { delete $ENV{http_proxy} }
 
 # workaround for HTTP::Tiny + Test::TCP
-BEGIN { $INC{'threads.pm'} = 0 };
+BEGIN { $INC{'threads.pm'} = 0 }
 sub threads::tid { }
 
 use HTTP::Tiny;
@@ -36,7 +36,7 @@ if (not eval { require Net::SSLeay; Net::SSLeay->VERSION(1.49); }) {
     exit 0;
 }
 
-if (eval { require Acme::Override::INET; } ) {
+if (eval { require Acme::Override::INET; }) {
     plan skip_all => 'Acme::Override::INET is not supported';
     exit 0;
 }
@@ -45,23 +45,25 @@ my $ca_crt     = "$FindBin::Bin/../examples/ca.crt";
 my $server_crt = "$FindBin::Bin/../examples/localhost.crt";
 my $server_key = "$FindBin::Bin/../examples/localhost.key";
 
-my $body       = 'x'x(32*1024); # > 16KB
+my $body = 'x' x (32 * 1024);    # > 16KB
 
 test_tcp(
     client => sub {
         my $port = shift;
         sleep 1;
         my $ua = HTTP::Tiny->new(
-            verify_SSL => 1,
+            verify_SSL  => 1,
             SSL_options => {
-                SSL_ca_file   => $ca_crt,
-           }
+                SSL_ca_file => $ca_crt,
+            }
         );
         my $res = $ua->get("https://127.0.0.1:$port/");
-        ok $res->{success};
-        like $res->{headers}{server}, qr/Starlight/;
-        like $res->{content}, qr/xxxxxxxxxx/;
-        is length $res->{content}, length $body;
+        ok $res->{success}, 'success';
+        is $res->{status}, '200', 'status';
+        is $res->{reason}, 'OK',  'reason';
+        like $res->{headers}{server}, qr/Starlight/,  'server in headers';
+        like $res->{content},         qr/xxxxxxxxxx/, 'content';
+        is length $res->{content}, length $body, 'length of content';
         sleep 1;
     },
     server => sub {
@@ -74,7 +76,7 @@ test_tcp(
             ssl_key_file  => $server_key,
             ssl_cert_file => $server_crt,
         )->run(
-            sub { [ 200, [], [$body] ] },
+            sub { [200, [], [$body]] },
         );
     }
 );

@@ -3,10 +3,10 @@
 use strict;
 use warnings;
 
-BEGIN { delete $ENV{http_proxy} };
+BEGIN { delete $ENV{http_proxy} }
 
 # workaround for HTTP::Tiny + Test::TCP
-BEGIN { $INC{'threads.pm'} = 0 };
+BEGIN { $INC{'threads.pm'} = 0 }
 sub threads::tid { }
 
 use HTTP::Tiny;
@@ -32,7 +32,7 @@ if (not eval { HTTP::Tiny->VERSION(0.014) }) {
 
 test_tcp(
     server => sub {
-        my $port = shift;
+        my $port   = shift;
         my $runner = Plack::Runner->new;
         $runner->parse_options(
             qw(--server Starlight --env test --quiet --max-workers 0 --port), $port,
@@ -41,18 +41,18 @@ test_tcp(
             sub {
                 my $env = shift;
                 my $buf = '';
-                        while (length($buf) != $env->{CONTENT_LENGTH}) {
+                while (length($buf) != $env->{CONTENT_LENGTH}) {
                     my $rlen = $env->{'psgi.input'}->read(
                         $buf,
                         $env->{CONTENT_LENGTH} - length($buf),
                         length($buf),
                     );
-                    last unless $rlen > 0;
+                    last if $rlen <= 0;
                 }
                 return [
                     200,
-                    [ 'Content-Type' => 'text/plain' ],
-                    [ $buf ],
+                    ['Content-Type' => 'text/plain'],
+                    [$buf],
                 ];
             },
         );
@@ -72,11 +72,11 @@ Content-Length: 6\r
 EOT
         undef $sock;
         note 'send next request';
-        my $ua = HTTP::Tiny->new( timeout => 10 );
+        my $ua  = HTTP::Tiny->new(timeout => 10);
         my $res = $ua->post_form("http://127.0.0.1:$port/", { a => 1 });
-        ok $res->{success};
-        is $res->{status}, 200;
-        is $res->{content}, 'a=1';
+        ok $res->{success}, 'success';
+        is $res->{status},  200,   'status';
+        is $res->{content}, 'a=1', 'content';
     },
 );
 

@@ -3,10 +3,10 @@
 use strict;
 use warnings;
 
-BEGIN { delete $ENV{http_proxy} };
+BEGIN { delete $ENV{http_proxy} }
 
 # workaround for HTTP::Tiny + Test::TCP
-BEGIN { $INC{'threads.pm'} = 0 };
+BEGIN { $INC{'threads.pm'} = 0 }
 sub threads::tid { }
 
 use Test::TCP;
@@ -26,13 +26,13 @@ if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
 
 $Plack::Test::Impl = "Server";
 $ENV{PLACK_SERVER} = 'Starlight';
-$ENV{PLACK_QUIET} = 1;
+$ENV{PLACK_QUIET}  = 1;
 
 my $app = sub {
     my $env = shift;
     return sub {
         my $response = shift;
-        my $writer = $response->([ 200, [ 'Content-Type', 'text/plain' ]]);
+        my $writer   = $response->([200, ['Content-Type', 'text/plain']]);
         $writer->write("Content");
         $writer->write("");
         $writer->write("Again");
@@ -48,7 +48,7 @@ test_psgi $app, sub {
     my $req = HTTP::Request->new(GET => "http://127.0.0.1/");
     my $res = $cb->($req);
 
-    is $res->content, "ContentAgain";
+    is $res->content, "ContentAgain", 'content';
 
     sleep 1;
 };

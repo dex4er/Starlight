@@ -1,12 +1,18 @@
-[![Build Status](https://travis-ci.org/dex4er/Starlight.svg?branch=master)](https://travis-ci.org/dex4er/Starlight)[![CPAN version](https://badge.fury.io/pl/Starlight.svg)](https://metacpan.org/release/Starlight)
+# Starlight
 
-# NAME
+[![CI](https://github.com/dex4er/Starlight/actions/workflows/ci.yaml/badge.svg)](https://github.com/dex4er/Starlight/actions/workflows/ci.yaml)
+[![Trunk Check](https://github.com/dex4er/Starlight/actions/workflows/trunk.yaml/badge.svg)](https://github.com/dex4er/Starlight/actions/workflows/trunk.yaml)
+[![CPAN](https://img.shields.io/cpan/v/Starlight)](https://metacpan.org/dist/Starlight)
+
+## NAME
 
 starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
 
-# SYNOPSIS
+## SYNOPSIS
 
-    $ starlight --workers=20 --max-reqs-per-child=100 app.psgi
+```console
+
+    $ starlight --max-workers=20 --max-reqs-per-child=100 app.psgi
 
     $ starlight --port=80 --ipv6=1 app.psgi
 
@@ -15,7 +21,9 @@ starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
 
     $ starlight --socket=/tmp/starlight.sock app.psgi
 
-# DESCRIPTION
+```
+
+## DESCRIPTION
 
 Starlight is a standalone HTTP/1.1 server with keep-alive support. It uses
 pre-forking. It is pure-Perl implementation which doesn't require any XS
@@ -28,7 +36,7 @@ it was adapted to not use any other modules than [Plack](https://metacpan.org/po
 Starlight is created for Unix-like systems but it should also work on Windows
 with some limitations.
 
-# OPTIONS
+## OPTIONS
 
 In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), starlight accepts
 following options(s).
@@ -75,7 +83,7 @@ in main process so it doesn't consume all CPU. (default: 0.1)
 
 ## --ssl
 
-Enables SSL support. The [IO::Socket::SSL](https://metacpan.org/pod/IO::Socket::SSL) module is required. (default: 0)
+Enables SSL support. The [IO::Socket::SSL](https://metacpan.org/pod/IO%3A%3ASocket%3A%3ASSL) module is required. (default: 0)
 
 ## --ssl-key-file
 
@@ -93,15 +101,15 @@ enabled. (default: none)
 ## --ssl-verify-mode
 
 Sets the verification mode for the peer certificate. See
-["SSL\_verify\_mode" in IO::Socket::SSL](https://metacpan.org/pod/IO::Socket::SSL#SSL_verify_mode). (default: 0)
+["SSL\_verify\_mode" in IO::Socket::SSL](https://metacpan.org/pod/IO%3A%3ASocket%3A%3ASSL#SSL_verify_mode). (default: 0)
 
 ## --ipv6
 
-Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO::Socket::IP) module is required. (default: 0)
+Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AIP) module is required. (default: 0)
 
 ## --socket
 
-Enables UNIX socket support. The [IO::Socket::UNIX](https://metacpan.org/pod/IO::Socket::UNIX) module is required. The
+Enables UNIX socket support. The [IO::Socket::UNIX](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AUNIX) module is required. The
 socket file have to be not yet created. The first character `@` or `\0` in
 the socket file name means that abstract socket address will be created.
 (default: none)
@@ -147,14 +155,14 @@ enables you to still have access to the errors when using `--daemonize`.
 
 Suppress the message about starting a server.
 
-# SEE ALSO
+## SEE ALSO
 
 [Starlight](https://metacpan.org/pod/Starlight),
 [Thrall](https://metacpan.org/pod/Thrall),
 [Starlet](https://metacpan.org/pod/Starlet),
 [Starman](https://metacpan.org/pod/Starman)
 
-# LIMITATIONS
+## LIMITATIONS
 
 Perl on Windows systems (MSWin32 and cygwin) emulates ["fork" in perlfunc](https://metacpan.org/pod/perlfunc#fork) and
 ["waitpid" in perlfunc](https://metacpan.org/pod/perlfunc#waitpid) functions and uses threads internally. See [perlfork](https://metacpan.org/pod/perlfork)
@@ -164,9 +172,9 @@ It might be better option to use on this system the server with explicit
 [threads](https://metacpan.org/pod/threads) implementation, i.e. [Thrall](https://metacpan.org/pod/Thrall).
 
 For Cygwin the `perl-libwin32` package is highly recommended, because of
-[Win32::Process](https://metacpan.org/pod/Win32::Process) module which helps to terminate stalled worker processes.
+[Win32::Process](https://metacpan.org/pod/Win32%3A%3AProcess) module which helps to terminate stalled worker processes.
 
-# BUGS
+## BUGS
 
 ## Windows
 
@@ -175,12 +183,12 @@ systems (MSWin32). Cygwin version seems to be correct.
 
 Some requests can fail with message:
 
-    failed to set socket to nonblocking mode:An operation was attempted on
-    something that is not a socket.
+> failed to set socket to nonblocking mode:An operation was attempted on
+> something that is not a socket.
 
 or
 
-    Bad file descriptor at (eval 24) line 4.
+> Bad file descriptor at (eval 24) line 4.
 
 This problem was introduced in Perl 5.16 and fixed in Perl 5.19.5.
 
@@ -190,8 +198,8 @@ issue.
 
 The server fails when worker process calls ["exit" in perlfunc](https://metacpan.org/pod/perlfunc#exit) function:
 
-    Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
-    0x22dcc0c at lib/Plack/Handler/Starlight.pm line 140.
+> Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
+> 0x22dcc0c at lib/Plack/Handler/Starlight.pm line 140.
 
 It means that Harakiri mode can't work and the server have to be started with
 `--max-reqs-per-child=inf` option.
@@ -208,7 +216,7 @@ If you find the bug or want to implement new features, please report it at
 The code repository is available at
 [http://github.com/dex4er/Starlight](http://github.com/dex4er/Starlight)
 
-# AUTHORS
+## AUTHORS
 
 Piotr Roszatycki <dexter@cpan.org>
 
@@ -234,9 +242,9 @@ Jeremy Howard &lt;j+daemonize@howard.fm>
 
 Paul Seamons <paul@seamons.com>
 
-# LICENSE
+## LICENSE
 
-Copyright (c) 2013-2016, 2020 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2013-2016, 2020, 2023 Piotr Roszatycki <dexter@cpan.org>.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.

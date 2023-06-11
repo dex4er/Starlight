@@ -4,14 +4,14 @@ NAME
 
 SYNOPSIS
 
-      $ starlight --workers=20 --max-reqs-per-child=100 app.psgi
+        $ starlight --max-workers=20 --max-reqs-per-child=100 app.psgi
     
-      $ starlight --port=80 --ipv6=1 app.psgi
+        $ starlight --port=80 --ipv6=1 app.psgi
     
-      $ starlight --port=443 --ssl=1 --ssl-key-file=file.key
-                  --ssl-cert-file=file.crt app.psgi
+        $ starlight --port=443 --ssl=1 --ssl-key-file=file.key
+                    --ssl-cert-file=file.crt app.psgi
     
-      $ starlight --socket=/tmp/starlight.sock app.psgi
+        $ starlight --socket=/tmp/starlight.sock app.psgi
 
 DESCRIPTION
 
@@ -53,8 +53,8 @@ BUGS
 
     Some requests can fail with message:
 
-      failed to set socket to nonblocking mode:An operation was attempted on
-      something that is not a socket.
+      failed to set socket to nonblocking mode:An operation was attempted
+      on something that is not a socket.
 
     or
 
@@ -113,7 +113,7 @@ AUTHORS
 
 LICENSE
 
-    Copyright (c) 2013-2016, 2020 Piotr Roszatycki <dexter@cpan.org>.
+    Copyright (c) 2013-2016, 2020, 2023 Piotr Roszatycki <dexter@cpan.org>.
 
     This is free software; you can redistribute it and/or modify it under
     the same terms as perl itself.

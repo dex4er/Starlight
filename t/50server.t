@@ -3,10 +3,10 @@
 use strict;
 use warnings;
 
-BEGIN { delete $ENV{http_proxy} };
+BEGIN { delete $ENV{http_proxy} }
 
 # workaround for HTTP::Tiny + Test::TCP
-BEGIN { $INC{'threads.pm'} = 0 };
+BEGIN { $INC{'threads.pm'} = 0 }
 sub threads::tid { }
 
 use HTTP::Tiny;
@@ -29,21 +29,23 @@ test_tcp(
     client => sub {
         my $port = shift;
         sleep 1;
-        my $ua = HTTP::Tiny->new;
+        my $ua  = HTTP::Tiny->new;
         my $res = $ua->get("http://127.0.0.1:$port/");
-        ok $res->{success};
-        like $res->{headers}{server}, qr/Starlight/;
-        like $res->{content}, qr/Hello/;
+        ok $res->{success}, 'success';
+        is $res->{status}, '200', 'status';
+        is $res->{reason}, 'OK',  'reason';
+        like $res->{headers}{server}, qr/Starlight/, 'server in headers';
+        like $res->{content},         qr/Hello/,     'content';
         sleep 1;
     },
     server => sub {
         my $port = shift;
         Starlight::Server->new(
-            quiet    => 1,
-            host     => '127.0.0.1',
-            port     => $port,
+            quiet => 1,
+            host  => '127.0.0.1',
+            port  => $port,
         )->run(
-            sub { [ 200, [], ["Hello world\n"] ] },
+            sub { [200, [], ["Hello world\n"]] },
         );
     }
 );

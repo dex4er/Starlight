@@ -3,10 +3,10 @@
 use strict;
 use warnings;
 
-BEGIN { delete $ENV{http_proxy} };
+BEGIN { delete $ENV{http_proxy} }
 
 # workaround for HTTP::Tiny + Test::TCP
-BEGIN { $INC{'threads.pm'} = 0 };
+BEGIN { $INC{'threads.pm'} = 0 }
 sub threads::tid { }
 
 use Test::More;
@@ -28,32 +28,34 @@ test_tcp(
     client => sub {
         my $port = shift;
         sleep 1;
-        my $ua = HTTP::Tiny->new;
+        my $ua  = HTTP::Tiny->new;
         my $res = $ua->get("http://127.0.0.1:$port/");
-        ok( $res->{success} );
-        like( scalar $res->{headers}{server}, qr/Starlight/ );
-        unlike( scalar $res->{headers}{server}, qr/Hello/ );
+        ok $res->{success}, 'success';
+        like scalar $res->{headers}{server},   qr/Starlight/, 'server in headers';
+        unlike scalar $res->{headers}{server}, qr/Hello/,     'server in headers';
 
         $res = $ua->get("http://127.0.0.1:$port/?server=1");
-        ok( $res->{success} );
-        unlike( scalar $res->{headers}{server}, qr/Starlight/ );
-        like( scalar $res->{headers}{server}, qr/Hello/ );
+        ok $res->{success}, 'success';
+        unlike scalar $res->{headers}{server}, qr/Starlight/, 'server in headers';
+        like scalar $res->{headers}{server},   qr/Hello/,     'server in headers';
         sleep 1;
     },
     server => sub {
-        my $port = shift;
+        my $port   = shift;
         my $loader = Plack::Loader->load(
             'Starlight',
-            quiet => 1,
-            port => $port,
+            quiet       => 1,
+            port        => $port,
             max_workers => 5,
         );
-        $loader->run(sub{
-            my $env = shift;
-            my @headers = ('Content-Type','text/html');
-            push @headers, 'Server', 'Hello' if $env->{QUERY_STRING};
-            [200, \@headers, ['HELLO']];
-        });
+        $loader->run(
+            sub {
+                my $env     = shift;
+                my @headers = ('Content-Type', 'text/html');
+                push @headers, 'Server', 'Hello' if $env->{QUERY_STRING};
+                [200, \@headers, ['HELLO']];
+            }
+        );
         exit;
     },
 );
