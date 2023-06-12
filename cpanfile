@@ -24,6 +24,8 @@ on test => sub {
 
 feature examples => sub {
     recommends 'Mojolicious';
+    recommends 'Plack::Middleware::Debug';
+    recommends 'Plack::Middleware::TrafficLog';
 };
 
 on develop => sub {
