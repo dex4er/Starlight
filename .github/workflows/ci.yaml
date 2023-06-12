@@ -87,7 +87,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install required dependencies
-        run: cpanm --with-recommends --with-suggests --installdeps --notest --skip-satisfied .
+        run: for i in 1 2 3; do cpanm --with-recommends --with-suggests --installdeps --notest --skip-satisfied .; done
 
       - name: Skip extra tests
         run: echo 'TEST_SKIP_EXTRA=1' >> $GITHUB_ENV
