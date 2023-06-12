@@ -1,3 +1,8 @@
+0.0401  2020-03-12      Piotr Roszatycki <dexter@cpan.org>
+
+* Provides cpanfile.
+* More reliable tests.
+
 0.0400  2020-03-12      Piotr Roszatycki <dexter@cpan.org>
 
 * New options `--ssl-ca-file` and `--ssl-verify-mode`.
