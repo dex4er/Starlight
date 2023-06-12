@@ -27,6 +27,11 @@ if (not eval { require IO::Socket::SSL; }) {
     exit 0;
 }
 
+if (not eval { require LWP::Protocol::https; }) {
+    plan skip_all => 'LWP::Protocol::https required';
+    exit 0;
+}
+
 if (not eval { require Net::SSLeay; Net::SSLeay->VERSION(1.49); }) {
     plan skip_all => 'Net::SSLeay >= 1.49 required';
     exit 0;
