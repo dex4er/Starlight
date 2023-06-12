@@ -6,9 +6,12 @@ Plack::Handler::Starlight - Plack adapter for Starlight
 
 =head1 SYNOPSIS
 
-=for markdown ```console
+=for markdown ```perl
 
-    $ plackup -s Starlight your-app.psgi
+    use Plack::Loader;
+
+    my $loader = Plack::Loader->load('Starlight', port => 80);
+    $loader->run(sub { [200, ['Content-Type', 'text/plain'], ['PSGI app']] });
 
 =for markdown ```
 

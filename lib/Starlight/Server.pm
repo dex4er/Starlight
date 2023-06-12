@@ -8,19 +8,10 @@ Starlight::Server - Core class for a Starlight server
 
 =for markdown ```perl
 
-    use base qw(Starlight::Server);
+    use Starlight::Server;
 
-    sub run {
-        my ($self, $app) = @_;
-
-        $self->_daemonize();
-        $self->setup_listener();
-        $self->_setup_privileges();
-        while (1) {
-            $self->accept_loop($app, $self->_calc_reqs_per_child());
-            $self->_sleep($self->{spawn_interval});
-        }
-    }
+    my $server = Starlight::Server->new(port  => $port);
+    $server->run(sub { [200, ['Content-Type', 'text/plain'], ['PSGI app']] });
 
 =for markdown ```
 

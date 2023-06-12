@@ -23,7 +23,7 @@ if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
     exit 0;
 }
 
-my $thrall = Plack::Loader->load(
+my $server = Plack::Loader->load(
     'Starlight',
     min_reqs_per_child => 5,
     max_reqs_per_child => 10,
@@ -34,7 +34,7 @@ sleep 1;
 
 my ($min, $max) = (7, 7);
 for (my $i = 0; $i < 10000; $i++) {
-    my $n = $thrall->_calc_reqs_per_child();
+    my $n = $server->_calc_reqs_per_child();
     $min = $n
         if $n < $min;
     $max = $n
