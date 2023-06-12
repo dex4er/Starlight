@@ -22,13 +22,13 @@ if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
 
 $Plack::Test::Impl = "Server";
 $ENV{PLACK_SERVER} = 'Starlight';
-$ENV{PLACK_QUIET}  = 1;
+$ENV{PLACK_QUIET} = 1;
 
 my $app = sub {
     my $env = shift;
     return sub {
         my $response = shift;
-        my $writer   = $response->([200, ['Content-Type', 'text/plain']]);
+        my $writer = $response->([200, ['Content-Type', 'text/plain']]);
         $writer->write("Content");
         $writer->write("");
         $writer->write("Again");

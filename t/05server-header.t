@@ -31,23 +31,23 @@ test_tcp(
         my $res = $ua->get("http://127.0.0.1:$port/");
 
         ok $res->is_success, 'is_success';
-        is $res->code,    '200', 'code';
-        is $res->message, 'OK',  'message';
-        like $res->header('server'),          qr/Starlight/, 'server in headers';
-        unlike scalar $res->header('server'), qr/Hello/,     'content in headers';
+        is $res->code, '200', 'code';
+        is $res->message, 'OK', 'message';
+        like $res->header('server'), qr/Starlight/, 'server in headers';
+        unlike scalar $res->header('server'), qr/Hello/, 'content in headers';
 
         $res = $ua->get("http://127.0.0.1:$port/?server=1");
 
         ok $res->is_success, 'is_success';
-        is $res->code,    '200', 'code';
-        is $res->message, 'OK',  'message';
-        unlike $res->header('server'),      qr/Starlight/, 'server in headers';
-        like scalar $res->header('server'), qr/Hello/,     'content in headers';
+        is $res->code, '200', 'code';
+        is $res->message, 'OK', 'message';
+        unlike $res->header('server'), qr/Starlight/, 'server in headers';
+        like scalar $res->header('server'), qr/Hello/, 'content in headers';
 
         sleep 1;
     },
     server => sub {
-        my $port   = shift;
+        my $port = shift;
         my $loader = Plack::Loader->load(
             'Starlight',
             quiet       => 1,
@@ -56,7 +56,7 @@ test_tcp(
         );
         $loader->run(
             sub {
-                my $env     = shift;
+                my $env = shift;
                 my @headers = ('Content-Type', 'text/html');
                 push @headers, 'Server', 'Hello' if $env->{QUERY_STRING};
                 [200, \@headers, ['HELLO']];

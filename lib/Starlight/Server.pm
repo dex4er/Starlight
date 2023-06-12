@@ -116,7 +116,8 @@ sub new {
     }
 
     if ($args{max_workers} && $args{max_workers} > 1) {
-        die("Forking in $class is deprecated. Falling back to the single process mode. ",
+        die(
+            "Forking in $class is deprecated. Falling back to the single process mode. ",
             "If you need more workers, use Starlight instead and run like `plackup -s Starlight`\n",
         );
     }
@@ -149,11 +150,11 @@ sub prepare_socket_class {
     } elsif ($self->{ssl}) {
         try { require IO::Socket::SSL; 1 }
             or die "SSL suport requires IO::Socket::SSL\n";
-        $args->{SSL_key_file}       = $self->{ssl_key_file};
-        $args->{SSL_cert_file}      = $self->{ssl_cert_file};
-        $args->{SSL_ca_file}        = $self->{ssl_ca_file};
+        $args->{SSL_key_file} = $self->{ssl_key_file};
+        $args->{SSL_cert_file} = $self->{ssl_cert_file};
+        $args->{SSL_ca_file} = $self->{ssl_ca_file};
         $args->{SSL_client_ca_file} = $self->{ssl_ca_file};
-        $args->{SSL_verify_mode}    = $self->{ssl_verify_mode};
+        $args->{SSL_verify_mode} = $self->{ssl_verify_mode};
         return "IO::Socket::SSL";
     } elsif ($self->{ipv6}) {
         try { require IO::Socket::IP; 1 }
@@ -182,7 +183,7 @@ sub setup_listener {
         ReuseAddr => 1,
         );
 
-    my $proto     = $self->{ssl}    ? 'https'                  : 'http';
+    my $proto = $self->{ssl} ? 'https' : 'http';
     my $listening = $self->{socket} ? "socket $self->{socket}" : "port $self->{port}";
 
     my $class = $self->prepare_socket_class(\%args);
@@ -194,7 +195,7 @@ sub setup_listener {
 
     my $family = Socket::sockaddr_family(getsockname($self->{listen_sock}));
     $self->{_listen_sock_is_unix} = $family == AF_UNIX;
-    $self->{_listen_sock_is_tcp}  = $family != AF_UNIX;
+    $self->{_listen_sock_is_tcp} = $family != AF_UNIX;
 
     # set defer accept
     if ($^O eq 'linux' && $self->{_listen_sock_is_tcp}) {
@@ -217,7 +218,7 @@ sub accept_loop {
 
     $self->{can_exit} = 1;
     my $is_keepalive = 0;
-    my $sigint       = $self->{_sigint};
+    my $sigint = $self->{_sigint};
     local $SIG{$sigint} = local $SIG{TERM} = sub {
         my ($sig) = @_;
         warn "*** SIG$sig received in process $$" if DEBUG;
@@ -251,7 +252,7 @@ sub accept_loop {
                     $peeraddr = Socket::inet_ntoa($peerhost);
                 }
             }
-            my $req_count     = 0;
+            my $req_count = 0;
             my $pipelined_buf = '';
             while (1) {
                 ++$req_count;
@@ -282,7 +283,7 @@ sub accept_loop {
                 $may_keepalive = 1 if length $pipelined_buf;
                 my $keepalive;
                 ($keepalive, $pipelined_buf) = $self->handle_connection(
-                    $env,           $conn,           $app,
+                    $env, $conn, $app,
                     $may_keepalive, $req_count != 1, $pipelined_buf
                 );
 
@@ -304,9 +305,9 @@ my $bad_response = [400, ['Content-Type' => 'text/plain', 'Connection' => 'close
 sub handle_connection {
     my ($self, $env, $conn, $app, $use_keepalive, $is_keepalive, $prebuf) = @_;
 
-    my $buf           = '';
+    my $buf = '';
     my $pipelined_buf = '';
-    my $res           = $bad_response;
+    my $res = $bad_response;
 
     local $self->{can_exit} = (defined $prebuf) ? 0 : 1;
     while (1) {
@@ -349,7 +350,7 @@ sub handle_connection {
                     my $chunk;
                     if (length $buf) {
                         $chunk = $buf;
-                        $buf   = '';
+                        $buf = '';
                     } else {
                         $self->read_timeout($conn, \$chunk, $cl, 0, $self->{timeout})
                             or return;
@@ -359,14 +360,14 @@ sub handle_connection {
                 }
                 $env->{'psgi.input'} = $buffer->rewind;
             } elsif ($chunked) {
-                my $buffer       = Plack::TempBuffer->new;
+                my $buffer = Plack::TempBuffer->new;
                 my $chunk_buffer = '';
                 my $length;
             DECHUNK: while (1) {
                     my $chunk;
                     if (length $buf) {
                         $chunk = $buf;
-                        $buf   = '';
+                        $buf = '';
                     } else {
                         $self->read_timeout($conn, \$chunk, CHUNKSIZE, 0, $self->{timeout})
                             or return;
@@ -374,7 +375,7 @@ sub handle_connection {
 
                     $chunk_buffer .= $chunk;
                     while ($chunk_buffer =~ s/^(([0-9a-fA-F]+).*\015\012)//) {
-                        my $trailer   = $1;
+                        my $trailer = $1;
                         my $chunk_len = hex $2;
                         if ($chunk_len == 0) {
                             last DECHUNK;
@@ -388,7 +389,7 @@ sub handle_connection {
                     }
                 }
                 $env->{CONTENT_LENGTH} = $length;
-                $env->{'psgi.input'}   = $buffer->rewind;
+                $env->{'psgi.input'} = $buffer->rewind;
             } else {
                 if ($buf =~ m!^(?:GET|HEAD)!) {    #pipeline
                     $pipelined_buf = $buf;
@@ -441,8 +442,8 @@ sub handle_connection {
 sub _handle_response {
     my ($self, $protocol, $res, $conn, $use_keepalive_r) = @_;
     my $status_code = $res->[0];
-    my $headers     = $res->[1];
-    my $body        = $res->[2];
+    my $headers = $res->[1];
+    my $body = $res->[2];
 
     my @lines;
     my %send_headers;
@@ -595,7 +596,7 @@ DO_SELECT:
             ($rfd, $wfd) = ($efd, '');
         }
         my $start_at = time;
-        my $nfound   = select($rfd, $wfd, $efd, $timeout);
+        my $nfound = select($rfd, $wfd, $efd, $timeout);
         $timeout -= (time - $start_at);
         last   if $nfound;
         return if $timeout <= 0;
@@ -662,7 +663,7 @@ sub _daemonize {
 
         open my $devnull, '+>', File::Spec->devnull or die "Cannot open null device: $!\n";
 
-        open STDIN,  '>&', $devnull or die "Cannot dup null device: $!\n";
+        open STDIN, '>&', $devnull  or die "Cannot dup null device: $!\n";
         open STDOUT, '>&', $devnull or die "Cannot dup null device: $!\n";
 
         defined(my $pid = fork) or die "Cannot fork: $!\n";
@@ -781,7 +782,7 @@ sub _set_uid {
 sub _set_gid {
     my ($self, @groups) = @_;
     my $gids = $self->_get_gid(@groups);
-    my $gid  = (split /\s+/, $gids)[0];
+    my $gid = (split /\s+/, $gids)[0];
     eval { $EGID = $gids } or 1;    # store all the gids - this is really sort of optional
 
     eval { POSIX::setgid($gid) } or 1;
@@ -818,7 +819,7 @@ sub _create_process {
 
 sub _calc_reqs_per_child {
     my $self = shift;
-    my $max  = $self->{max_reqs_per_child};
+    my $max = $self->{max_reqs_per_child};
     if (my $min = $self->{min_reqs_per_child}) {
         srand((rand() * 2**30) ^ $$ ^ time);
         return $max - int(($max - $min + 1) * rand);

@@ -26,7 +26,7 @@ if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
 
 test_tcp(
     server => sub {
-        my $port   = shift;
+        my $port = shift;
         my $runner = Plack::Runner->new;
         $runner->parse_options(
             qw(--server Starlight --env test --quiet --max-workers 0 --port), $port,
@@ -72,8 +72,8 @@ EOT
         my $res = $ua->post("http://127.0.0.1:$port/", { a => 1 });
 
         ok $res->is_success, 'is_success';
-        is $res->code,    '200', 'code';
-        is $res->message, 'OK',  'message';
+        is $res->code, '200', 'code';
+        is $res->message, 'OK', 'message';
         is $res->content, 'a=1', 'content';
     },
 );

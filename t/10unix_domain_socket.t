@@ -36,7 +36,7 @@ if ($pid == 0) {
     );
     $loader->run(
         sub {
-            my $env    = shift;
+            my $env = shift;
             my $remote = $env->{REMOTE_ADDR} || 'UNIX';
             [200, ['Content-Type' => 'text/html'], ["HELLO $remote"]];
         }
@@ -53,7 +53,7 @@ my $client = IO::Socket::UNIX->new(
 
 $client->syswrite("GET / HTTP/1.0\015\012\015\012");
 $client->sysread(my $buf, 1024);
-like $buf, qr/Starlight/,  '$buf';
+like $buf, qr/Starlight/, '$buf';
 like $buf, qr/HELLO UNIX/, '$buf';
 
 sleep 1;

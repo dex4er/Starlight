@@ -31,20 +31,20 @@ BEGIN {
 
     {
         no strict 'vars';
-        $VERSION   = '0.05';
-        @EXPORT    = qw(&options &run_tests);
+        $VERSION = '0.05';
+        @EXPORT = qw(&options &run_tests);
         @EXPORT_OK = @EXPORT;
     }
 
     my $Test = Test::Builder->new;
 
     sub import {
-        my $self   = shift;
+        my $self = shift;
         my $caller = caller;
 
         {
             no strict 'refs';
-            *{ $caller . '::options' }   = \&options;
+            *{ $caller . '::options' } = \&options;
             *{ $caller . '::run_tests' } = \&run_tests;
         }
 
@@ -100,7 +100,7 @@ BEGIN {
     );
 
     my %bad_names = ();
-    my %lc_names  = ();
+    my %lc_names = ();
 
     sub options {
         my %opts = @_;

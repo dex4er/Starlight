@@ -31,10 +31,10 @@ test_tcp(
         my $res = $ua->get("http://127.0.0.1:$port/");
 
         ok $res->is_success, 'is_success';
-        is $res->code,    '200', 'code';
-        is $res->message, 'OK',  'message';
+        is $res->code, '200', 'code';
+        is $res->message, 'OK', 'message';
         like $res->header('server'), qr/Starlight/, 'server in headers';
-        like $res->content,          qr/Hello/,     'content';
+        like $res->content, qr/Hello/, 'content';
 
         sleep 1;
     },

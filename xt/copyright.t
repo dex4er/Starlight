@@ -14,7 +14,7 @@ use Test::More qw(no_plan);    ## no critic (Bangs::ProhibitNoPlan)
 Readonly my $LOCALTIME_YEAR_FIELD_NUMBER => 5;
 Readonly my $LOCALTIME_YEAR_OFFSET       => 1900;
 
-my $this_year        = (localtime)[$LOCALTIME_YEAR_FIELD_NUMBER] + $LOCALTIME_YEAR_OFFSET;
+my $this_year = (localtime)[$LOCALTIME_YEAR_FIELD_NUMBER] + $LOCALTIME_YEAR_OFFSET;
 my $copyrights_found = 0;
 find({ wanted => \&check_file, no_chdir => 1 }, 'lib');
 foreach (grep { m/^readme/ixms } read_dir(q<.>)) {

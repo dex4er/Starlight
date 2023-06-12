@@ -44,9 +44,9 @@ my $build = Module::Build::My->new(
     create_license          => 1,
     recursive_test_files    => 0,
     add_to_cleanup          => [
-        '*.bak',      '*.gz',     '*.tgz', '*.ppd', '*.ppmx', '*.deb',
+        '*.bak', '*.gz', '*.tgz', '*.ppd', '*.ppmx', '*.deb',
         'pm_to_blib', 'cover_db', 'Debian_CPANTS.txt',
-        'compilet*',  'test-*',
+        'compilet*', 'test-*',
         "$dist-*",
     ],
     meta_merge => {

@@ -41,7 +41,7 @@ for (my $i = 0; $i < 10000; $i++) {
         if $n > $max;
 }
 
-is $min, 5,  "min";
+is $min, 5, "min";
 is $max, 10, "max";
 
 done_testing;

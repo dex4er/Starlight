@@ -51,9 +51,9 @@ test_tcp(
         close $fh;
 
         ok $res->is_success, 'is_success';
-        is $res->code,                          '200',                              'code';
-        is $res->message,                       'OK',                               'message';
-        is $res->header('x-content-length'),    100_000,                            'length';
+        is $res->code, '200', 'code';
+        is $res->message, 'OK', 'message';
+        is $res->header('x-content-length'), 100_000, 'length';
         is Digest::MD5::md5_hex($res->content), '5793f7e3037448b250ae716b43ece2c2', 'content';
         like $res->content, qr/^A{25000}A{25000}A{25000}A{25000}$/, 'content';
 

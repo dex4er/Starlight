@@ -30,14 +30,14 @@ test_tcp(
         );
         ok $sock, '$sock';
         my $localport = $sock->sockport;
-        my $req       = "GET / HTTP/1.0\015\012\015\012";
+        my $req = "GET / HTTP/1.0\015\012\015\012";
         $sock->syswrite($req, length($req));
         $sock->sysread(my $buf, 1024);
         like $buf, qr/HELLO $localport/, '$buf';
         sleep 1;
     },
     server => sub {
-        my $port   = shift;
+        my $port = shift;
         my $loader = Plack::Loader->load(
             'Starlight',
             quiet       => 1,
@@ -46,8 +46,8 @@ test_tcp(
         );
         $loader->run(
             sub {
-                my $env         = shift;
-                my @headers     = ();
+                my $env = shift;
+                my @headers = ();
                 my $remote_port = $env->{REMOTE_PORT};
                 [200, ['Content-Type' => 'text/html'], ['HELLO ' . $remote_port]];
             }

@@ -37,7 +37,7 @@ if (eval { require Acme::Override::INET; }) {
     exit 0;
 }
 
-my $ca_crt     = "$FindBin::Bin/../examples/ca.crt";
+my $ca_crt = "$FindBin::Bin/../examples/ca.crt";
 my $client_crt = "$FindBin::Bin/../examples/client.crt";
 my $client_key = "$FindBin::Bin/../examples/client.key";
 my $server_crt = "$FindBin::Bin/../examples/localhost.crt";
@@ -60,8 +60,8 @@ test_tcp(
         my $res = $ua->get("https://127.0.0.1:$port/");
 
         ok $res->is_success, 'is_success';
-        is $res->code,    '200', 'code';
-        is $res->message, 'OK',  'message';
+        is $res->code, '200', 'code';
+        is $res->message, 'OK', 'message';
         like $res->header('server'), qr/Starlight/, 'server in headers';
         is $res->content, 'https', 'content';
 

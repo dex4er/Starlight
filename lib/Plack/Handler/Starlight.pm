@@ -59,18 +59,18 @@ sub new {
     if ($^O eq 'MSWin32') {
 
         # forks are emulated
-        $self->{is_multithread}  = Plack::Util::TRUE;
+        $self->{is_multithread} = Plack::Util::TRUE;
         $self->{is_multiprocess} = Plack::Util::FALSE;
     } else {
 
         # real forks
-        $self->{is_multithread}  = Plack::Util::FALSE;
+        $self->{is_multithread} = Plack::Util::FALSE;
         $self->{is_multiprocess} = Plack::Util::TRUE;
     }
     $self->{max_workers} = $max_workers;
 
     $self->{main_process} = $$;
-    $self->{processes}    = +{};
+    $self->{processes} = +{};
 
     $self->{_kill_stalled_processes_delay} = 10;
 
@@ -98,7 +98,7 @@ sub run {
         delete $self->{processes}->{$pid};
     };
 
-    my $sigint  = $self->{_sigint};
+    my $sigint = $self->{_sigint};
     my $sigterm = $^O eq 'MSWin32' ? 'KILL' : 'TERM';
 
     if ($self->{max_workers} != 0) {
