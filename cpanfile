@@ -16,7 +16,6 @@ on build => sub {
 
 on test => sub {
     requires 'LWP';
-    requires 'LWP::Protocol::http';
     requires 'Test::More', '0.88';
     requires 'Test::TCP', '0.15';
 

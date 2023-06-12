@@ -26,10 +26,9 @@ my $build = Module::Build::My->new(
         $^O eq 'cygwin' ? ('Win32::Process' => 0) : (),
     },
     test_requires => {
-        'LWP'                 => 0,
-        'LWP::Protocol::http' => 0,
-        'Test::More'          => 0.88,
-        'Test::TCP'           => 0.15,
+        'LWP'        => 0,
+        'Test::More' => 0.88,
+        'Test::TCP'  => 0.15,
     },
     script_files => [
         'script/starlight.pl',
