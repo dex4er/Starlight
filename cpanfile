@@ -18,6 +18,8 @@ on test => sub {
     requires 'LWP';
     requires 'Test::More', '0.88';
     requires 'Test::TCP', '0.15';
+
+    suggests 'LWP::Protocol::https';
 };
 
 feature examples => sub {

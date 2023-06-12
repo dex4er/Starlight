@@ -25,12 +25,7 @@ my $build = Module::Build::My->new(
     recommends => {
         $^O eq 'cygwin' ? ('Win32::Process' => 0) : (),
     },
-    suggests => {
-        'IO::Socket::IO'  => 0,
-        'IO::Socket::SSL' => 0,
-        'Net::SSLeay'     => '1.49',
-    },
-    build_requires => {
+    test_requires => {
         'LWP'        => 0,
         'Test::More' => 0.88,
         'Test::TCP'  => 0.15,
