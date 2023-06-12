@@ -13,9 +13,10 @@ use Digest::MD5;
 use File::ShareDir;
 use File::Temp;
 use HTTP::Tiny;
-use Plack::Loader;
 use Test::More;
 use Test::TCP;
+
+use Starlight::Server;
 
 if ($^O eq 'MSWin32' and not $ENV{PERL_TEST_BROKEN}) {
     plan skip_all => 'Perl with bug RT#119003 on MSWin32';
@@ -55,14 +56,12 @@ test_tcp(
         sleep 1;
     },
     server => sub {
-        my $port   = shift;
-        my $loader = Plack::Loader->load(
-            'Starlight',
-            quiet       => 1,
-            port        => $port,
-            max_workers => 5,
-        );
-        $loader->run(
+        my $port = shift;
+        Starlight::Server->new(
+            quiet => 1,
+            host  => '127.0.0.1',
+            port  => $port,
+        )->run(
             sub {
                 my $env = shift;
                 my $body;
