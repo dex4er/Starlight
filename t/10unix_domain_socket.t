@@ -5,11 +5,11 @@ use warnings;
 
 BEGIN { delete $ENV{http_proxy} }
 
-use Test::More;
 use Plack::Loader;
 use File::Temp;
 use IO::Socket::UNIX;
 use Socket;
+use Test::More;
 
 if ($^O eq 'MSWin32') {
     plan skip_all => 'UNIX socket tests on MSWin32';

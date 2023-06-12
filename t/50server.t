@@ -5,11 +5,7 @@ use warnings;
 
 BEGIN { delete $ENV{http_proxy} }
 
-# workaround for HTTP::Tiny + Test::TCP
-BEGIN { $INC{'threads.pm'} = 0 }
-sub threads::tid { }
-
-use HTTP::Tiny;
+use LWP::UserAgent;
 use Test::TCP;
 use Test::More;
 
@@ -29,13 +25,17 @@ test_tcp(
     client => sub {
         my $port = shift;
         sleep 1;
-        my $ua  = HTTP::Tiny->new;
+
+        my $ua = LWP::UserAgent->new;
+        $ua->timeout(10);
         my $res = $ua->get("http://127.0.0.1:$port/");
-        ok $res->{success}, 'success';
-        is $res->{status}, '200', 'status';
-        is $res->{reason}, 'OK',  'reason';
-        like $res->{headers}{server}, qr/Starlight/, 'server in headers';
-        like $res->{content},         qr/Hello/,     'content';
+
+        ok $res->is_success, 'is_success';
+        is $res->code,    '200', 'code';
+        is $res->message, 'OK',  'message';
+        like $res->header('server'), qr/Starlight/, 'server in headers';
+        like $res->content,          qr/Hello/,     'content';
+
         sleep 1;
     },
     server => sub {

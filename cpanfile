@@ -15,9 +15,9 @@ on build => sub {
 };
 
 on test => sub {
-    requires 'HTTP::Tiny';
+    requires 'LWP';
     requires 'Test::More', '0.88';
-    requires 'Test::TCP',  '0.15';
+    requires 'Test::TCP', '0.15';
 };
 
 feature examples => sub {

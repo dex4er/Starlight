@@ -3,16 +3,12 @@
 use strict;
 use warnings;
 
-BEGIN { delete $ENV{http_proxy} }
+BEGIN { delete $ENV{http_proxy}; delete $ENV{https_proxy} }
 
-# workaround for HTTP::Tiny + Test::TCP
-BEGIN { $INC{'threads.pm'} = 0 }
-sub threads::tid { }
-
-use HTTP::Tiny;
+use FindBin;
+use LWP::UserAgent;
 use Test::TCP;
 use Test::More;
-use FindBin;
 
 use Starlight::Server;
 
@@ -51,21 +47,24 @@ test_tcp(
     client => sub {
         my $port = shift;
         sleep 1;
-        my $ua = HTTP::Tiny->new(
-            verify_SSL  => 1,
-            SSL_options => {
-                SSL_ca_file   => $ca_crt,
-                SSL_cert_file => $client_crt,
-                SSL_key_file  => $client_key,
-                SSL_use_cert  => 0,
-            }
+
+        my $ua = LWP::UserAgent->new;
+        $ua->timeout(10);
+        $ua->ssl_opts(
+            verify_hostname => 1,
+            SSL_ca_file     => $ca_crt,
+            SSL_cert_file   => $client_crt,
+            SSL_key_file    => $client_key,
+            SSL_verify_mode => IO::Socket::SSL->SSL_VERIFY_PEER,
         );
         my $res = $ua->get("https://127.0.0.1:$port/");
-        ok $res->{success}, 'success';
-        is $res->{status}, '200', 'status';
-        is $res->{reason}, 'OK',  'reason';
-        like $res->{headers}{server}, qr/Starlight/, 'server in headers';
-        is $res->{content}, 'https', 'content';
+
+        ok $res->is_success, 'is_success';
+        is $res->code,    '200', 'code';
+        is $res->message, 'OK',  'message';
+        like $res->header('server'), qr/Starlight/, 'server in headers';
+        is $res->content, 'https', 'content';
+
         sleep 1;
     },
     server => sub {

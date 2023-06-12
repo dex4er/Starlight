@@ -31,7 +31,7 @@ my $build = Module::Build::My->new(
         'Net::SSLeay'     => '1.49',
     },
     build_requires => {
-        'HTTP::Tiny' => 0,
+        'LWP'        => 0,
         'Test::More' => 0.88,
         'Test::TCP'  => 0.15,
     },

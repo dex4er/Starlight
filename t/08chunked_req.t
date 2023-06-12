@@ -5,14 +5,11 @@ use warnings;
 
 BEGIN { delete $ENV{http_proxy} }
 
-# workaround for HTTP::Tiny + Test::TCP
-BEGIN { $INC{'threads.pm'} = 0 }
-sub threads::tid { }
-
 use Digest::MD5;
 use File::ShareDir;
 use File::Temp;
-use HTTP::Tiny;
+use HTTP::Request;
+use LWP::UserAgent;
 use Test::More;
 use Test::TCP;
 
@@ -36,22 +33,29 @@ close $fh;
 test_tcp(
     client => sub {
         my $port = shift;
-        sleep 2;
 
         my $status = open my $fh, '<:raw', $filename;
         ok $status, 'open';
 
         local $/ = \1024;
 
-        my $ua  = HTTP::Tiny->new(timeout => 10);
-        my $res = $ua->post("http://127.0.0.1:$port/", { content => sub { scalar <$fh> } });
+        sleep 1;
 
-        ok $res->{success}, 'success';
-        is $res->{status},                        '200',                              'status';
-        is $res->{reason},                        'OK',                               'reason';
-        is $res->{headers}{'x-content-length'},   100_000,                            'length';
-        is Digest::MD5::md5_hex($res->{content}), '5793f7e3037448b250ae716b43ece2c2', 'content';
-        like $res->{content}, qr/^A{25000}A{25000}A{25000}A{25000}$/, 'content';
+        my $ua = LWP::UserAgent->new;
+        $ua->timeout(10);
+        my $req = HTTP::Request->new(POST => "http://127.0.0.1:$port/");
+        $req->headers->remove_header('Content-Length');
+        $req->content(sub { scalar <$fh> });
+        my $res = $ua->request($req);
+
+        close $fh;
+
+        ok $res->is_success, 'is_success';
+        is $res->code,                          '200',                              'code';
+        is $res->message,                       'OK',                               'message';
+        is $res->header('x-content-length'),    100_000,                            'length';
+        is Digest::MD5::md5_hex($res->content), '5793f7e3037448b250ae716b43ece2c2', 'content';
+        like $res->content, qr/^A{25000}A{25000}A{25000}A{25000}$/, 'content';
 
         sleep 1;
     },

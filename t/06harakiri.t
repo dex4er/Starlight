@@ -5,7 +5,7 @@ use warnings;
 
 BEGIN { delete $ENV{http_proxy} }
 
-use HTTP::Request::Common;
+use HTTP::Request;
 use Plack::Test;
 use Test::More;
 
@@ -32,7 +32,8 @@ test_psgi app => sub {
     my $cb = shift;
     sleep 1;
     for (1 .. 23) {
-        my $res = $cb->(GET "/");
+        my $req = HTTP::Request->new(GET => '/');
+        my $res = $cb->($req);
         $seen_pid{ $res->content }++;
     }
     cmp_ok(keys(%seen_pid), '<=', 10, 'In non-harakiri mode, pid is reused');
@@ -49,7 +50,8 @@ test_psgi app => sub {
     my $cb = shift;
     sleep 1;
     for (1 .. 23) {
-        my $res = $cb->(GET "/");
+        my $req = HTTP::Request->new(GET => '/');
+        my $res = $cb->($req);
         $seen_pid{ $res->content }++;
     }
     is keys(%seen_pid), 23, 'In Harakiri mode, each pid only used once';

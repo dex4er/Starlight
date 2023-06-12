@@ -9,10 +9,9 @@ BEGIN { delete $ENV{http_proxy} }
 BEGIN { $INC{'threads.pm'} = 0 }
 sub threads::tid { }
 
-use HTTP::Tiny;
+use LWP::UserAgent;
 use Plack::Runner;
 use Test::More;
-
 use Test::TCP;
 
 if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BROKEN}) {
@@ -22,11 +21,6 @@ if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BR
 
 if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
     plan skip_all => 'Win32::Process required';
-    exit 0;
-}
-
-if (not eval { HTTP::Tiny->VERSION(0.014) }) {
-    plan skip_all => 'HTTP::Tiny >= 0.014 required';
     exit 0;
 }
 
@@ -72,11 +66,15 @@ Content-Length: 6\r
 EOT
         undef $sock;
         note 'send next request';
-        my $ua  = HTTP::Tiny->new(timeout => 10);
-        my $res = $ua->post_form("http://127.0.0.1:$port/", { a => 1 });
-        ok $res->{success}, 'success';
-        is $res->{status},  200,   'status';
-        is $res->{content}, 'a=1', 'content';
+
+        my $ua = LWP::UserAgent->new;
+        $ua->timeout(10);
+        my $res = $ua->post("http://127.0.0.1:$port/", { a => 1 });
+
+        ok $res->is_success, 'is_success';
+        is $res->code,    '200', 'code';
+        is $res->message, 'OK',  'message';
+        is $res->content, 'a=1', 'content';
     },
 );
 
