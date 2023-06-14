@@ -25,7 +25,7 @@ L<Plack::Handler::Starlight> handler when started with `plackup` command.
 use strict;
 use warnings;
 
-our $VERSION = '0.0402';
+our $VERSION = '0.0403';
 
 use Config;
 
@@ -178,7 +178,7 @@ sub setup_listener {
         : (
         Listen    => Socket::SOMAXCONN,
         LocalPort => $self->{port} || 5000,
-        LocalAddr => $self->{host} || 0,
+        LocalAddr => $self->{host} || '0.0.0.0',
         Proto     => 'tcp',
         ReuseAddr => 1,
         );
