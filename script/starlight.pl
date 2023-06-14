@@ -244,6 +244,22 @@ See L<https://rt.perl.org/Public/Bug/Display.html?id=40565> and
 L<https://github.com/dex4er/Starlight/issues/1> for more information about
 this issue.
 
+=head2 MacOS
+
+MacOS High Sierra and newer shows error:
+
+=over
+
+objc[12345]: +[__NSCFConstantString initialize] may have been in progress in another thread when fork() was called.
+objc[12345]: +[__NSCFConstantString initialize] may have been in progress in another thread when fork() was called. We cannot safely call it or ignore it in the fork() child process. Crashing instead. Set a breakpoint on objc_initializeAfterForkError to debug.
+
+=back
+
+This error is caused by an added security to restrict multithreading.
+
+To override the limitation, run
+C<export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES> before using this server.
+
 =head2 Reporting
 
 If you find the bug or want to implement new features, please report it at
