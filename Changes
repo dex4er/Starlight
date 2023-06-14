@@ -1,3 +1,7 @@
+0.0402  2020-03-14      Piotr Roszatycki <dexter@cpan.org>
+
+* Excludes Perl < 5.14 on MSWin32 from SSL tests.
+
 0.0401  2020-03-12      Piotr Roszatycki <dexter@cpan.org>
 
 * Provides cpanfile.
