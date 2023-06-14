@@ -138,8 +138,8 @@ sub prepare_socket_class {
         die "UNIX socket and ether IPv4 or IPv6 are not supported at the same time.\n";
     }
 
-    if ($self->{ssl} and ($self->{socket} or $self->{ipv6})) {
-        die "SSL and either UNIX socket or IPv6 are not supported at the same time.\n";
+    if ($self->{socket} and $self->{ssl}) {
+        die "UNIX socket and SSL are not supported at the same time.\n";
     }
 
     if ($self->{socket}) {
@@ -147,7 +147,16 @@ sub prepare_socket_class {
             or die "UNIX socket suport requires IO::Socket::UNIX\n";
         $args->{Local} =~ s/^@/\0/;    # abstract socket address
         return "IO::Socket::UNIX";
-    } elsif ($self->{ssl}) {
+    }
+
+    if ($self->{ipv6}) {
+        try { require IO::Socket::IP; 1 }
+            or die "IPv6 support requires IO::Socket::IP\n";
+        $self->{host} ||= '::';
+        $args->{LocalAddr} = $self->{host};
+    }
+
+    if ($self->{ssl}) {
         try { require IO::Socket::SSL; 1 }
             or die "SSL suport requires IO::Socket::SSL\n";
         $args->{SSL_key_file} = $self->{ssl_key_file};
@@ -155,15 +164,11 @@ sub prepare_socket_class {
         $args->{SSL_ca_file} = $self->{ssl_ca_file};
         $args->{SSL_client_ca_file} = $self->{ssl_ca_file};
         $args->{SSL_verify_mode} = $self->{ssl_verify_mode};
-        return "IO::Socket::SSL";
-    } elsif ($self->{ipv6}) {
-        try { require IO::Socket::IP; 1 }
-            or die "IPv6 support requires IO::Socket::IP\n";
-        $self->{host}      ||= '::';
-        $args->{LocalAddr} ||= '::';
-        return "IO::Socket::IP";
+        $args->{SSL_startHandshake} = 0;
     }
 
+    return "IO::Socket::SSL" if $self->{ssl};
+    return "IO::Socket::IP"  if $self->{ipv6};
     return "IO::Socket::INET";
 }
 
@@ -183,12 +188,19 @@ sub setup_listener {
         ReuseAddr => 1,
         );
 
+    if ($self->{ssl}) {
+        try { require IO::Socket::SSL; 1 }
+            or die "SSL suport requires IO::Socket::SSL\n";
+    }
+
     my $proto = $self->{ssl} ? 'https' : 'http';
     my $listening = $self->{socket} ? "socket $self->{socket}" : "port $self->{port}";
 
     my $class = $self->prepare_socket_class(\%args);
     $self->{listen_sock} ||= $class->new(%args)
-        or die "failed to listen to $listening: $!\n";
+        or do {
+        die "failed to listen to $listening: $!\n";
+        };
 
     print STDERR "Starting $self->{server_software} $proto server listening at $listening\n"
         unless $self->{quiet};
@@ -233,70 +245,90 @@ sub accept_loop {
     local $SIG{PIPE} = 'IGNORE';
 
     while (!defined $max_reqs_per_child || $proc_req_count < $max_reqs_per_child) {
-        if (my ($conn, $peer) = $self->{listen_sock}->accept) {
-            $self->{_is_deferred_accept} = $self->{_using_defer_accept};
-            $conn->blocking(0)
-                or die "failed to set socket to nonblocking mode:$!\n";
-            my ($peerport, $peerhost, $peeraddr) = (0, undef, undef);
-            if ($self->{_listen_sock_is_tcp}) {
-                if (try { TCP_NODELAY }) {
-                    $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
-                        or die "setsockopt(TCP_NODELAY) failed:$!\n";
-                }
-                local $@;
-                if (HAS_INET6 && Socket::sockaddr_family(getsockname($conn)) == AF_INET6) {
-                    ($peerport, $peerhost) = Socket::unpack_sockaddr_in6($peer);
-                    $peeraddr = Socket::inet_ntop(AF_INET6, $peerhost);
-                } else {
-                    ($peerport, $peerhost) = Socket::unpack_sockaddr_in($peer);
-                    $peeraddr = Socket::inet_ntoa($peerhost);
-                }
+        my ($conn, $peer) = $self->{listen_sock}->accept or do {
+            warn "failed to accept: $!\n";
+            next;
+        };
+
+        my ($peerport, $peerhost, $peeraddr) = (0, undef, undef);
+        if ($self->{_listen_sock_is_tcp}) {
+            if (HAS_INET6 && Socket::sockaddr_family(getsockname($conn)) == AF_INET6) {
+                ($peerport, $peerhost) = Socket::unpack_sockaddr_in6($peer);
+                $peeraddr = Socket::inet_ntop(AF_INET6, $peerhost);
+            } else {
+                ($peerport, $peerhost) = Socket::unpack_sockaddr_in($peer);
+                $peeraddr = Socket::inet_ntoa($peerhost);
             }
-            my $req_count = 0;
-            my $pipelined_buf = '';
-            while (1) {
-                ++$req_count;
-                ++$proc_req_count;
-                my $env = {
-                    SERVER_PORT            => $self->{port} || 0,
-                    SERVER_NAME            => $self->{host} || '*',
-                    SCRIPT_NAME            => '',
-                    REMOTE_ADDR            => $peeraddr,
-                    REMOTE_PORT            => $peerport,
-                    'psgi.version'         => [1, 1],
-                    'psgi.errors'          => *STDERR,
-                    'psgi.url_scheme'      => $self->{ssl} ? 'https' : 'http',
-                    'psgi.run_once'        => Plack::Util::FALSE,
-                    'psgi.multithread'     => $self->{is_multithread},
-                    'psgi.multiprocess'    => $self->{is_multiprocess},
-                    'psgi.streaming'       => Plack::Util::TRUE,
-                    'psgi.nonblocking'     => Plack::Util::FALSE,
-                    'psgix.input.buffered' => Plack::Util::TRUE,
-                    'psgix.io'             => $conn,
-                    'psgix.harakiri'       => Plack::Util::TRUE,
-                };
-
-                my $may_keepalive = $req_count < $self->{max_keepalive_reqs};
-                if ($may_keepalive && $max_reqs_per_child && $proc_req_count >= $max_reqs_per_child) {
-                    $may_keepalive = undef;
-                }
-                $may_keepalive = 1 if length $pipelined_buf;
-                my $keepalive;
-                ($keepalive, $pipelined_buf) = $self->handle_connection(
-                    $env, $conn, $app,
-                    $may_keepalive, $req_count != 1, $pipelined_buf
-                );
-
-                if ($env->{'psgix.harakiri.commit'}) {
-                    $conn->close;
+            if (try { TCP_NODELAY }) {
+                $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
+                    or do {
+                    warn "setsockopt(TCP_NODELAY) failed for $peeraddr:$peerport: $!\n";
                     return;
-                }
-                last unless $keepalive;
+                    };
+            }
+        }
+
+        if (ref $conn eq 'IO::Socket::SSL') {
+            $conn->accept_SSL or do {
+                my @err = ();
+                push @err, $!                          if $!;
+                push @err, $IO::Socket::SSL::SSL_ERROR if $IO::Socket::SSL::SSL_ERROR;
+                warn "failed to ssl handshake with $peeraddr:$peerport: @{[join ': ', @err]}\n";
+                return;
+            };
+        }
+
+        $self->{_is_deferred_accept} = $self->{_using_defer_accept};
+        $conn->blocking(0)
+            or do {
+            warn "failed to set socket to nonblocking mode for $peeraddr:$peerport: $!\n";
+            return;
+            };
+
+        my $req_count = 0;
+        my $pipelined_buf = '';
+        while (1) {
+            ++$req_count;
+            ++$proc_req_count;
+            my $env = {
+                SERVER_PORT            => $self->{port} || 0,
+                SERVER_NAME            => $self->{host} || '*',
+                SCRIPT_NAME            => '',
+                REMOTE_ADDR            => $peeraddr,
+                REMOTE_PORT            => $peerport,
+                'psgi.version'         => [1, 1],
+                'psgi.errors'          => *STDERR,
+                'psgi.url_scheme'      => $self->{ssl} ? 'https' : 'http',
+                'psgi.run_once'        => Plack::Util::FALSE,
+                'psgi.multithread'     => $self->{is_multithread},
+                'psgi.multiprocess'    => $self->{is_multiprocess},
+                'psgi.streaming'       => Plack::Util::TRUE,
+                'psgi.nonblocking'     => Plack::Util::FALSE,
+                'psgix.input.buffered' => Plack::Util::TRUE,
+                'psgix.io'             => $conn,
+                'psgix.harakiri'       => Plack::Util::TRUE,
+            };
+
+            my $may_keepalive = $req_count < $self->{max_keepalive_reqs};
+            if ($may_keepalive && $max_reqs_per_child && $proc_req_count >= $max_reqs_per_child) {
+                $may_keepalive = undef;
+            }
+            $may_keepalive = 1 if length $pipelined_buf;
+            my $keepalive;
+            ($keepalive, $pipelined_buf) = $self->handle_connection(
+                $env, $conn, $app,
+                $may_keepalive, $req_count != 1, $pipelined_buf
+            );
+
+            if ($env->{'psgix.harakiri.commit'}) {
+                $conn->close;
+                return;
+            }
+            last unless $keepalive;
 
 # TODO add special cases for clients with broken keep-alive support, as well as disabling keep-alive for HTTP/1.0 proxies
-            }
-            $conn->close;
         }
+        $conn->close;
     }
 }
 
