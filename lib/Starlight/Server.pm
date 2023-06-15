@@ -263,7 +263,7 @@ sub accept_loop {
                 $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                     or do {
                     warn "setsockopt(TCP_NODELAY) failed for $peeraddr:$peerport: $!\n";
-                    return;
+                    next;
                     };
             }
         }
@@ -274,7 +274,7 @@ sub accept_loop {
                 push @err, $!                          if $!;
                 push @err, $IO::Socket::SSL::SSL_ERROR if $IO::Socket::SSL::SSL_ERROR;
                 warn "failed to ssl handshake with $peeraddr:$peerport: @{[join ': ', @err]}\n";
-                return;
+                next;
             };
         }
 
@@ -282,7 +282,7 @@ sub accept_loop {
         $conn->blocking(0)
             or do {
             warn "failed to set socket to nonblocking mode for $peeraddr:$peerport: $!\n";
-            return;
+            next;
             };
 
         my $req_count = 0;
