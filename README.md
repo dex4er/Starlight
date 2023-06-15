@@ -26,7 +26,7 @@ starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
 ## DESCRIPTION
 
 Starlight is a standalone HTTP/1.1 server with keep-alive support. It uses
-pre-forking. It is pure-Perl implementation which doesn't require any XS
+pre-forking. It is a pure-Perl implementation that doesn't require any XS
 package.
 
 Starlight was started as a fork of [Thrall](https://metacpan.org/pod/Thrall) server which is a fork of
@@ -38,12 +38,12 @@ with some limitations.
 
 ## OPTIONS
 
-In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), starlight accepts
+In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), starlight accepts the
 following options(s).
 
 ## --max-workers
 
-Number of worker processes. (default: 10)
+A number of worker processes. (default: 10)
 
 ## --timeout
 
@@ -69,12 +69,18 @@ If set, randomizes the number of requests handled by a single worker process
 between the value and that supplied by `--max-reqs-per-chlid`.
 (default: none)
 
+## --loader
+
+Starlet changes the default loader to _Delayed_ to make a lower consumption
+of the childs and prevent problems with shared IO handlers. It might be set to
+`Plack::Loader` to restore the default loader.
+
 ## --spawn-interval
 
-If set, worker processes will not be spawned more than once than every given
-seconds.  Also, when SIGHUP is being received, no more than one worker
-processes will be collected every given seconds. This feature is useful for
-doing a "slow-restart". (default: none)
+If set, worker processes will not be spawned more than once every given
+second. Also, when _SIGHUP_ is being received, no more than one worker
+process will be collected every given second. This feature is useful for
+doing a "slow restart". (default: none)
 
 ## --main-process-delay
 
@@ -110,29 +116,29 @@ Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO%3A%3ASock
 ## --socket
 
 Enables UNIX socket support. The [IO::Socket::UNIX](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AUNIX) module is required. The
-socket file have to be not yet created. The first character `@` or `\0` in
-the socket file name means that abstract socket address will be created.
+socket file has to be not yet created. The first character `@` or `\0` in
+the socket file name means that an abstract socket address will be created.
 (default: none)
 
 ## --user
 
 Changes the user id or user name that the server process should switch to
 after binding to the port. The pid file, error log or unix socket also are
-created before changing privileges. This options is usually used if main
-process is started with root privileges beacause binding to the low-numbered
-(<1024) port. (default: none)
+created before changing privileges. This option is usually used if the main
+process is started with root privileges because of binding to the
+low-numbered (<1024) port. (default: none)
 
 ## --group
 
 Changes the group ids or group names that the server should switch to after
-binding to the port. The ids or names can be separated with comma or space
-character. (default: none)
+binding to the port. The ids or names can be separated with commas or space
+characters. (default: none)
 
 ## --umask
 
 Changes file mode creation mask. The ["umask" in perlfunc](https://metacpan.org/pod/perlfunc#umask) is an octal number
 representing disabled permissions bits for newly created files. It is usually
-`022` when group shouldn't have permission to write or `002` when group
+`022` when a group shouldn't have permission to write or `002` when a group
 should have permission to write. (default: none)
 
 ## --daemonize
@@ -168,7 +174,7 @@ Perl on Windows systems (MSWin32 and cygwin) emulates ["fork" in perlfunc](https
 ["waitpid" in perlfunc](https://metacpan.org/pod/perlfunc#waitpid) functions and uses threads internally. See [perlfork](https://metacpan.org/pod/perlfork)
 (MSWin32) and [perlcygwin](https://metacpan.org/pod/perlcygwin) (cygwin) for details and limitations.
 
-It might be better option to use on this system the server with explicit
+It might be a better option to use on this system the server with explicit
 [threads](https://metacpan.org/pod/threads) implementation, i.e. [Thrall](https://metacpan.org/pod/Thrall).
 
 For Cygwin the `perl-libwin32` package is highly recommended, because of
@@ -181,7 +187,7 @@ For Cygwin the `perl-libwin32` package is highly recommended, because of
 There is a problem with Perl threads implementation which occurs on Windows
 systems (MSWin32). Cygwin version seems to be correct.
 
-Some requests can fail with message:
+Some requests can fail with the message:
 
 > failed to set socket to nonblocking mode:An operation was attempted on
 > something that is not a socket.
@@ -196,17 +202,29 @@ See [https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003](https://rt.perl.
 [https://github.com/dex4er/Thrall/issues/5](https://github.com/dex4er/Thrall/issues/5) for more information about this
 issue.
 
-The server fails when worker process calls ["exit" in perlfunc](https://metacpan.org/pod/perlfunc#exit) function:
+The server fails when a worker process calls ["exit" in perlfunc](https://metacpan.org/pod/perlfunc#exit) function:
 
 > Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
 > 0x22dcc0c at lib/Plack/Handler/Starlight.pm line 140.
 
-It means that Harakiri mode can't work and the server have to be started with
+It means that Harakiri mode can't work and the server has to be started with
 `--max-reqs-per-child=inf` option.
 
 See [https://rt.perl.org/Public/Bug/Display.html?id=40565](https://rt.perl.org/Public/Bug/Display.html?id=40565) and
 [https://github.com/dex4er/Starlight/issues/1](https://github.com/dex4er/Starlight/issues/1) for more information about
 this issue.
+
+## MacOS
+
+MacOS High Sierra and newer shows error:
+
+> objc\[12345\]: +\[\_\_NSCFConstantString initialize\] may have been in progress in another thread when fork() was called.
+> objc\[12345\]: +\[\_\_NSCFConstantString initialize\] may have been in progress in another thread when fork() was called. We cannot safely call it or ignore it in the fork() child process. Crashing instead. Set a breakpoint on objc\_initializeAfterForkError to debug.
+
+This error is caused by an added security to restrict multithreading.
+
+To override the limitation, run
+`export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` before using this server.
 
 ## Reporting
 

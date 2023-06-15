@@ -22,7 +22,7 @@ starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
 =head1 DESCRIPTION
 
 Starlight is a standalone HTTP/1.1 server with keep-alive support. It uses
-pre-forking. It is pure-Perl implementation which doesn't require any XS
+pre-forking. It is a pure-Perl implementation that doesn't require any XS
 package.
 
 Starlight was started as a fork of L<Thrall> server which is a fork of
@@ -60,12 +60,12 @@ $runner->run;
 
 =head1 OPTIONS
 
-In addition to the options supported by L<plackup>, starlight accepts
+In addition to the options supported by L<plackup>, starlight accepts the
 following options(s).
 
 =head2 --max-workers
 
-Number of worker processes. (default: 10)
+A number of worker processes. (default: 10)
 
 =head2 --timeout
 
@@ -91,12 +91,18 @@ If set, randomizes the number of requests handled by a single worker process
 between the value and that supplied by C<--max-reqs-per-chlid>.
 (default: none)
 
+=head2 --loader
+
+Starlet changes the default loader to I<Delayed> to make a lower consumption
+of the childs and prevent problems with shared IO handlers. It might be set to
+C<Plack::Loader> to restore the default loader.
+
 =head2 --spawn-interval
 
-If set, worker processes will not be spawned more than once than every given
-seconds.  Also, when SIGHUP is being received, no more than one worker
-processes will be collected every given seconds. This feature is useful for
-doing a "slow-restart". (default: none)
+If set, worker processes will not be spawned more than once every given
+second. Also, when I<SIGHUP> is being received, no more than one worker
+process will be collected every given second. This feature is useful for
+doing a "slow restart". (default: none)
 
 =head2 --main-process-delay
 
@@ -132,29 +138,29 @@ Enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 0)
 =head2 --socket
 
 Enables UNIX socket support. The L<IO::Socket::UNIX> module is required. The
-socket file have to be not yet created. The first character C<@> or C<\0> in
-the socket file name means that abstract socket address will be created.
+socket file has to be not yet created. The first character C<@> or C<\0> in
+the socket file name means that an abstract socket address will be created.
 (default: none)
 
 =head2 --user
 
 Changes the user id or user name that the server process should switch to
 after binding to the port. The pid file, error log or unix socket also are
-created before changing privileges. This options is usually used if main
-process is started with root privileges beacause binding to the low-numbered
-(E<lt>1024) port. (default: none)
+created before changing privileges. This option is usually used if the main
+process is started with root privileges because of binding to the
+low-numbered (E<lt>1024) port. (default: none)
 
 =head2 --group
 
 Changes the group ids or group names that the server should switch to after
-binding to the port. The ids or names can be separated with comma or space
-character. (default: none)
+binding to the port. The ids or names can be separated with commas or space
+characters. (default: none)
 
 =head2 --umask
 
 Changes file mode creation mask. The L<perlfunc/umask> is an octal number
 representing disabled permissions bits for newly created files. It is usually
-C<022> when group shouldn't have permission to write or C<002> when group
+C<022> when a group shouldn't have permission to write or C<002> when a group
 should have permission to write. (default: none)
 
 =head2 --daemonize
@@ -192,7 +198,7 @@ Perl on Windows systems (MSWin32 and cygwin) emulates L<perlfunc/fork> and
 L<perlfunc/waitpid> functions and uses threads internally. See L<perlfork>
 (MSWin32) and L<perlcygwin> (cygwin) for details and limitations.
 
-It might be better option to use on this system the server with explicit
+It might be a better option to use on this system the server with explicit
 L<threads> implementation, i.e. L<Thrall>.
 
 For Cygwin the C<perl-libwin32> package is highly recommended, because of
@@ -205,7 +211,7 @@ L<Win32::Process> module which helps to terminate stalled worker processes.
 There is a problem with Perl threads implementation which occurs on Windows
 systems (MSWin32). Cygwin version seems to be correct.
 
-Some requests can fail with message:
+Some requests can fail with the message:
 
 =over
 
@@ -228,7 +234,7 @@ See L<https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003> and
 L<https://github.com/dex4er/Thrall/issues/5> for more information about this
 issue.
 
-The server fails when worker process calls L<perlfunc/exit> function:
+The server fails when a worker process calls L<perlfunc/exit> function:
 
 =over
 
@@ -237,7 +243,7 @@ Attempt to free unreferenced scalar: SV 0x293a76c, Perl interpreter:
 
 =back
 
-It means that Harakiri mode can't work and the server have to be started with
+It means that Harakiri mode can't work and the server has to be started with
 C<--max-reqs-per-child=inf> option.
 
 See L<https://rt.perl.org/Public/Bug/Display.html?id=40565> and
