@@ -104,6 +104,11 @@ Specifies the path to SSL certificate file. (default: none)
 Specifies the path to SSL CA certificate file used when verification mode is
 enabled. (default: none)
 
+## --ssl-client-ca-file
+
+Specifies the path to SSL CA certificate file for client verification.
+(default: none)
+
 ## --ssl-verify-mode
 
 Sets the verification mode for the peer certificate. See
