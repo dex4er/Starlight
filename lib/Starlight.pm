@@ -19,6 +19,8 @@ Starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
 
     $ starlight your-app.psgi
 
+    $ starlight --help
+
 =for markdown ```
 
 =head1 DESCRIPTION
@@ -39,7 +41,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '0.0403';
+our $VERSION = '0.0500';
 
 1;
 
