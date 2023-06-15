@@ -6,9 +6,9 @@ suggests 'IO::Socket::IP';
 suggests 'IO::Socket::SSL';
 suggests 'Net::SSLeay', '1.49';
 
-feature cygwin => sub {
+if ($^O eq 'cygwin') {
     recommends 'Win32::Process';
-};
+}
 
 on build => sub {
     requires 'Module::Build';
