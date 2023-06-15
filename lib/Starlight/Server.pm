@@ -188,11 +188,6 @@ sub setup_listener {
         ReuseAddr => 1,
         );
 
-    if ($self->{ssl}) {
-        try { require IO::Socket::SSL; 1 }
-            or die "SSL suport requires IO::Socket::SSL\n";
-    }
-
     my $proto = $self->{ssl} ? 'https' : 'http';
     my $listening = $self->{socket} ? "socket $self->{socket}" : "port $self->{port}";
 
@@ -268,7 +263,7 @@ sub accept_loop {
             }
         }
 
-        if (ref $conn eq 'IO::Socket::SSL') {
+        if ($conn->isa('IO::Socket::SSL')) {
             $conn->accept_SSL or do {
                 my @err = ();
                 push @err, $!                          if $!;
@@ -868,6 +863,8 @@ sub DESTROY {
 }
 
 1;
+
+__END__
 
 =head1 SEE ALSO
 
