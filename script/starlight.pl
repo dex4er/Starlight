@@ -99,11 +99,18 @@ may add multiple paths by using this option multiple times. See L<plackup>.
 
 =head2 --ipv6
 
-Enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 0)
+Enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 1
+if L<IO::Socket::IP> is available or 0 otherwise)
 
 =head2 --keepalive-timeout
 
 Timeout for persistent connections. (default: 2)
+
+=head2 -L, --loader
+
+Starlet changes the default loader to I<Delayed> to make lower consumption
+of the children and prevent problems with shared IO handlers. It might be set to
+C<Plack::Loader> to restore the default loader.
 
 =head2 -M
 
@@ -171,25 +178,25 @@ doing a "slow restart". (default: none)
 
 =head2 --ssl
 
-Enables SSL support. The L<IO::Socket::SSL> module is required. (default: 0)
+Enables the SSL support. The L<IO::Socket::SSL> module is required. (default: 0)
 
 =head2 --ssl-ca-file
 
-Specifies the path to SSL CA certificate file used when verification mode is
-enabled. (default: none)
+Specifies the path to the SSL CA certificate file used when verification mode
+is enabled. (default: none)
 
 =head2 --ssl-cert-file
 
-Specifies the path to SSL certificate file. (default: none)
+Specifies the path to the SSL certificate file. (default: none)
 
 =head2 --ssl-client-ca-file
 
-Specifies the path to SSL CA certificate file for client verification.
+Specifies the path to the SSL CA certificate file for client verification.
 (default: none)
 
 =head2 --ssl-key-file
 
-Specifies the path to SSL key file. (default: none)
+Specifies the path to the SSL key file. (default: none)
 
 =head2 --ssl-verify-mode
 
