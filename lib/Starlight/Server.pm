@@ -153,8 +153,6 @@ sub prepare_socket_class {
 
     if ($self->{ipv6}) {
         die "IPv6 support requires IO::Socket::IP\n" unless HAS_IO_SOCKET_IP;
-        $self->{host} ||= '::';
-        $args->{LocalAddr} = $self->{host};
     }
 
     if ($self->{ssl}) {
@@ -183,7 +181,7 @@ sub setup_listener {
         : (
         Listen    => Socket::SOMAXCONN,
         LocalPort => $self->{port} || 5000,
-        LocalAddr => $self->{host} || '0.0.0.0',
+        LocalAddr => $self->{host} || '127.0.0.1',
         Proto     => 'tcp',
         ReuseAddr => 1,
         );
