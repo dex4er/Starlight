@@ -8,29 +8,23 @@ use warnings;
 use lib 'inc';
 use Module::Build::My;
 
-use Config;
+use Module::CPANfile;
 
 my $module = 'Starlight';
 
 (my $dist = $module) =~ s/::/-/g;
 
+my $prereqs = Module::CPANfile->load->prereqs;
+
 my $build = Module::Build::My->new(
     module_name       => $module,
     dist_version_from => 'script/starlight.pl',
     license           => 'perl',
-    requires          => {
-        'perl'  => 5.008_001,
-        'Plack' => 0.9920,
-    },
-    recommends => {
-        $^O eq 'cygwin' ? ('Win32::Process' => 0) : (),
-    },
-    test_requires => {
-        'LWP'        => 0,
-        'Test::More' => 0.88,
-        'Test::TCP'  => 0.15,
-    },
-    script_files => [
+    build_requires    => $prereqs->requirements_for('build', 'requires')->as_string_hash,
+    requires          => $prereqs->requirements_for('runtime', 'requires')->as_string_hash,
+    recommends        => $prereqs->requirements_for('runtime', 'recommends')->as_string_hash,
+    test_requires     => $prereqs->requirements_for('test', 'requires')->as_string_hash,
+    script_files      => [
         'script/starlight.pl',
     ],
     auto_configure_requires => 0,
