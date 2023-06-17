@@ -181,7 +181,7 @@ sub setup_listener {
         : (
         Listen    => Socket::SOMAXCONN,
         LocalPort => $self->{port} || 5000,
-        LocalAddr => $self->{host} || '127.0.0.1',
+        LocalAddr => $self->{host},
         Proto     => 'tcp',
         ReuseAddr => 1,
         );
