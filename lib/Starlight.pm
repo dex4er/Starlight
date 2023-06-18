@@ -2,7 +2,7 @@ package Starlight;
 
 =head1 NAME
 
-Starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
+Starlight - Light and pure-Perl PSGI/Plack HTTP server with pre-forks
 
 =head1 SYNOPSIS
 
@@ -41,7 +41,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '0.0500';
+our $VERSION = '0.0501';
 
 1;
 

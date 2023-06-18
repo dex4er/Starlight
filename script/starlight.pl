@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-starlight - a light and pure-Perl PSGI/Plack HTTP server with pre-forks
+starlight - Light and pure-Perl PSGI/Plack HTTP server with pre-forks
 
 =head1 SYNOPSIS
 
@@ -41,7 +41,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '0.0500';
+our $VERSION = '0.0501';
 
 use Plack::Runner;
 

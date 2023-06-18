@@ -12,7 +12,7 @@ if ($^O eq 'cygwin') {
     recommends 'Win32::Process';
 }
 
-on build => sub {
+on configure => sub {
     requires 'Module::Build';
     requires 'Module::CPANfile';
 };
