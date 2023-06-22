@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: perl:${{ matrix.perl-version }}-threaded
+      image: perl:${{ matrix.perl-version }}
 
     steps:
       - name: Checkout
