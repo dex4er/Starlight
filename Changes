@@ -1,3 +1,7 @@
+0.0503  2023-06-22      Piotr Roszatycki <dexter@cpan.org>
+
+* Skip tests which don't work on MSWin32.
+
 0.0502  2023-06-22      Piotr Roszatycki <dexter@cpan.org>
 
 * Configure requires Software::License.
