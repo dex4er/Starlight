@@ -14,12 +14,50 @@ permissions:
   contents: read
 
 jobs:
-  test_with_cpm:
+  dist_sh_develop:
     strategy:
       fail-fast: false
       matrix:
         perl-version:
           - "5.36"
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: perl:${{ matrix.perl-version }}-threaded
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use cache
+        uses: actions/cache@v3
+        with:
+          path: local/
+          key: cpm-ci-dist-sh-develop-${{ matrix.perl-version }}-${{ runner.os }}-${{ hashFiles('cpanfile') }}
+
+      - name: Use local Perl packages
+        run: |
+          echo "$GITHUB_WORKSPACE/local/bin" | tee -a $GITHUB_PATH
+          echo "PERL5LIB=$GITHUB_WORKSPACE/local/lib/perl5" | tee -a $GITHUB_ENV
+
+      - name: Install cpm
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install --color --no-test App::cpm
+
+      - name: Install required dependencies
+        run: cpm install --color --no-test --with-configure --with-recommends --with-suggests
+
+      - name: Install develop dependencies
+        run: cpm install --color --no-test --with-develop
+
+      - name: Make distribution
+        run: ./Dist.SH
+
+  dist_sh:
+    strategy:
+      fail-fast: false
+      matrix:
+        perl-version:
           - "5.34"
           - "5.32"
           - "5.30"
@@ -36,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: perldocker/perl-tester:${{ matrix.perl-version }}
+      image: perl:${{ matrix.perl-version }}
 
     steps:
       - name: Checkout
@@ -46,54 +84,20 @@ jobs:
         uses: actions/cache@v3
         with:
           path: local/
-          key: cpm-ci-${{ matrix.perl-version }}-${{ runner.os }}-${{ hashFiles('cpanfile') }}
+          key: cpm-ci-dist-sh-${{ matrix.perl-version }}-${{ runner.os }}-${{ hashFiles('cpanfile') }}
 
       - name: Use local Perl packages
         run: |
           echo "$GITHUB_WORKSPACE/local/bin" | tee -a $GITHUB_PATH
           echo "PERL5LIB=$GITHUB_WORKSPACE/local/lib/perl5" | tee -a $GITHUB_ENV
 
+      - name: Install cpm
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install --color --no-test App::cpm
+
       - name: Install required dependencies
-        run: cpm install --color --no-test --with-recommends --with-suggests
-
-      - name: Install extra dependencies
-        if: matrix.perl-version == '5.36'
-        run: cpm install --color --no-test --with-develop
-
-      - name: Skip extra tests
-        run: echo 'TEST_SKIP_EXTRA=${{ (matrix.perl-version == '5.36' && 'perlcritic.t') || '1' }}' >> $GITHUB_ENV
+        run: cpm install --color --no-test --with-configure --with-recommends --with-suggests
 
       - name: Make distribution
         run: ./Dist.SH
-
-      - name: Verify changed files
-        uses: tj-actions/verify-changed-files@v14
-
-  test_with_cpanm:
-    strategy:
-      fail-fast: false
-      matrix:
-        perl-version:
-          - "5.10"
-          - "5.8"
-
-    runs-on: ubuntu-latest
-
-    container:
-      image: perldocker/perl-tester:${{ matrix.perl-version }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install required dependencies
-        run: for i in 1 2 3; do cpanm --with-recommends --with-suggests --installdeps --notest --skip-satisfied .; done
-
-      - name: Skip extra tests
-        run: echo 'TEST_SKIP_EXTRA=1' >> $GITHUB_ENV
-
-      - name: Make distribution
-        run: ./Dist.SH
-
-      - name: Verify changed files
-        uses: tj-actions/verify-changed-files@v14
+        env:
+          TEST_SKIP_DEVELOP: "1"

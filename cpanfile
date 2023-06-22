@@ -15,6 +15,7 @@ if ($^O eq 'cygwin') {
 on configure => sub {
     requires 'Module::Build';
     requires 'Module::CPANfile';
+    requires 'Software::License';
 };
 
 on test => sub {

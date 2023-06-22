@@ -25,7 +25,7 @@ L<Plack::Handler::Starlight> handler when started with `plackup` command.
 use strict;
 use warnings;
 
-our $VERSION = '0.0501';
+our $VERSION = '0.0502';
 
 use Config;
 

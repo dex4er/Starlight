@@ -1,3 +1,9 @@
+0.0502  2023-06-22      Piotr Roszatycki <dexter@cpan.org>
+
+* Configure requires Software::License.
+* More reliable tests.
+* Tests use explicitly 127.0.0.1 as a host.
+
 0.0501  2023-06-18      Piotr Roszatycki <dexter@cpan.org>
 
 * Correct configure requirements.
